@@ -1,6 +1,6 @@
 # OpenTaverns
 
-OpenTaverns is a browser table for friends with two original games. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
+OpenTaverns is a browser table for friends with three original games. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. **Blackout** is a 5–10 player hidden-role game about keeping a fictional city working through eight shifts. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
 
 ![Hearthlands board on desktop](docs/images/hearthlands-desktop.png)
 
@@ -9,6 +9,10 @@ OpenTaverns is a browser table for friends with two original games. **Hearthland
 ![Saigon Grid city circuit on desktop](docs/images/qa/grid-board-desktop-pass2.png)
 
 [See the Saigon Grid phone board](docs/images/qa/grid-board-mobile-final.png) and [match result](docs/images/qa/qa-grid-result-mobile-pass2.png).
+
+![Blackout city systems and response assignment](docs/images/qa/blackout-assignment-desktop-final.png)
+
+[See Blackout's private phone response](docs/images/qa/blackout-operator-mobile-final.png) and [post-game truth](docs/images/qa/blackout-truth-mobile-final.png).
 
 ## Start locally
 
@@ -49,6 +53,7 @@ Run `npm run dev` on the host computer. Open `http://HOST_IP:5173` from devices 
 | `npm run simulate -- --games 1000` | Six-player bot simulations |
 | `npm run simulate -- --games 100 --players 5 --seed 482913` | Reproduce a simulation range |
 | `npm run simulate -- --game saigon-grid --games 1000` | Saigon Grid bot simulations |
+| `npm run simulate -- --game blackout --games 1000 --players 10` | Blackout bot simulations, 5–10 seats |
 
 ## How Hearthlands works
 
@@ -73,15 +78,22 @@ See [the full Hearthlands rules](docs/hearthlands-engine.md) for placement, acti
 
 Players travel a 28-stop metropolitan circuit, buy real Ho Chi Minh City street names as Holdings, compete in open auctions, complete Districts, add Developments and Landmarks, trade, and manage Credits and Secured Loans. The two Transit Hubs are **Bến Xe Miền Đông** and **Bến Xe Miền Tây**; the Companies are **Electricity** and **Water**. The last solvent player wins. The rules are original to Saigon Grid, and its Districts are game groupings rather than administrative claims. See the [Saigon Grid rules and verified names](docs/saigon-grid.md) and [engine guide](docs/saigon-grid-engine.md).
 
+## How Blackout works
+
+Every player has a secret faction and an unrelated public profession. Most are Operators; a minority are Disruptors who know one another. Each Incident opens two Work Orders. The rotating Shift Lead assigns separate teams, and assigned players privately lock Stabilize, Diagnose, or, for Disruptors, Interfere. Diagnose sacrifices progress for shared Insight, so a failed order is not proof of sabotage. Two Insight can fund a private simultaneous Audit vote; an Audit reveals the number of Interfere actions on one order, never the actor.
+
+The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all three games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
+
 ## Architecture
 
 - `packages/hearthlands`: deterministic, headless TypeScript rules, topology, projections, replay, invariants, tests, and bots that act from their own projected view.
 - `packages/saigon-grid`: separate deterministic, headless city rules, transactions, events, scenarios, invariants, tests, and bots.
+- `packages/blackout`: deterministic simultaneous-action rules, private projections, Incidents, professions, bots, replay, invariants, and development scenarios.
 - `apps/server`: shared room and session management, runtime message validation, game dispatch, authoritative actions, WebSocket state delivery, and static hosting.
-- `apps/web`: collection, shared table flow, and separate React renderers for both games. The client proposes actions; it never decides their validity.
+- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all three games. The client proposes actions; it never decides their validity.
 - `tests/e2e`: multi-browser create/join, a complete six-seat match through victory, refresh and disconnect recovery, host transfer, trade races, security checks, and desktop/mobile screenshots.
 
-The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Spectators receive no private state. Hearthlands keeps an ordered action history for replay. Both rule states serialize as JSON, which permits a future durable store without changing the rules packages.
+The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All three rule states serialize as JSON, which permits a future durable store without changing the rules packages.
 
 See [architecture](docs/architecture.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
 
@@ -99,4 +111,4 @@ Do not scale this version to multiple instances: rooms are process-local, and a 
 
 ## Current limits and next steps
 
-Tables live in server memory, so a server restart or replacement ends ongoing games. Offline play, a full replay viewer, and sound are not included. The immediate next engineering step for durable public play is shared persistence plus restart recovery. The two rules packages remain separate from room/session code.
+Tables live in server memory, so a server restart or replacement ends ongoing games. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. The immediate next engineering step for durable public play is shared persistence plus restart recovery. The three rules packages remain separate from room/session code.

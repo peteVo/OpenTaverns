@@ -1,0 +1,13 @@
+{
+  "name": "@opentaverns/blackout",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./simulate": "./src/simulate.ts",
+    "./scenarios": "./src/scenarios.ts",
+    "./rules": "./src/rules.ts"
+  },
+  "scripts": { "build": "tsc --noEmit -p ../../tsconfig.json" }
+}

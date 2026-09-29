@@ -50,8 +50,10 @@ test('the collection, Saigon lobby, and city board work on desktop and phones', 
   await expect(host.getByRole('heading', { name: 'Holdings' })).toBeVisible();
   await host.getByRole('button', { name: 'trade', exact: true }).click();
   await expect(host.getByRole('heading', { name: 'Across the city' })).toBeVisible();
-  await host.getByRole('button', { name: 'rules', exact: true }).click();
-  await expect(host.getByRole('heading', { name: 'How the city plays' })).toBeVisible();
+  await host.getByRole('button', { name: 'Rules', exact: true }).click();
+  await expect(host.getByRole('dialog', { name: 'Saigon Grid city guide rules' })).toBeVisible();
+  await expect(host.getByRole('heading', { name: 'Quick rules' })).toBeVisible();
+  await host.keyboard.press('Escape');
   expect(errors).toEqual([]);
   await hostContext.close(); await guestContext.close();
 });
