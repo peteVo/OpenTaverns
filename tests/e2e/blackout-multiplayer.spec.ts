@@ -33,9 +33,10 @@ test('ten seats complete a private simultaneous response, audit, and reconnect',
     await expect.poll(async () => (await state(host, code)).seats.filter((seat: { connected: boolean }) => seat.connected).length).toBe(10);
     await expect(host.getByRole('button', { name: /Begin Blackout/ })).toBeEnabled();
     await host.getByRole('button', { name: /Begin Blackout/ }).click();
-    for (const page of pages.slice(0, 10)) {
+    for (const [index, page] of pages.slice(0, 10).entries()) {
       await expect(page.getByRole('dialog', { name: 'Your private Blackout role' })).toBeVisible();
       await page.getByRole('button', { name: /I understand/ }).click();
+      if (index === 0) { await page.reload(); expect((await state(page, code)).game.self.confirmed).toBe(true); }
     }
     await expect.poll(async () => (await state(host, code)).game.phase).toBe('INCIDENT_REVEAL');
     const spectator = pages[10]!;
@@ -68,6 +69,8 @@ test('ten seats complete a private simultaneous response, audit, and reconnect',
       else if (index !== 0) await page.locator('.bo-response-choices').getByRole('button', { name: /Stabilize/ }).click();
       await page.getByRole('button', { name: /Lock response/ }).click();
       if (index === 0) {
+        await page.reload();
+        expect((await state(page, code)).game.self.lockedResponse).toBe('DIAGNOSE');
         const spectatorView = (await state(spectator, code)).game;
         expect(spectatorView.orders[0].lockedPlayers).toHaveLength(1);
         expect(spectatorView.orders[0]).not.toHaveProperty('locked');
@@ -81,6 +84,7 @@ test('ten seats complete a private simultaneous response, audit, and reconnect',
     await expect.poll(async () => (await state(host, code)).game.phase).toBe('AUDIT_VOTE');
     for (let index = 0; index < 9; index++) {
       await pages[index]!.getByRole('button', { name: /Audit / }).first().click();
+      if (index === 0) { await host.reload(); expect((await state(host, code)).game.self.voted).toBe(true); }
       const live = (await state(spectator, code)).game;
       expect(live.voteProgress).toBe(index + 1);
       expect(live.history.at(-1).text).toMatch(/locked an Audit vote/);

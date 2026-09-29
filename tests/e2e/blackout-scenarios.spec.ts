@@ -92,3 +92,44 @@ test('Blackout phase surfaces remain private and legible on desktop and phone', 
   await page.screenshot({ path: 'test-results/blackout-disruptor-win-mobile-pass1.png', fullPage: true });
   expect(errors).toEqual([]);
 });
+
+test('public and private snapshots survive reconnect in every meaningful phase', async ({ page }) => {
+  const scenarios = ['ROLE_REVEAL_TEST', 'INCIDENT_TEST', 'BRIEFING_TEST', 'ASSIGNMENT_TEST', 'SECRET_ACTION_OPERATOR', 'WAITING_TEST', 'RESOLUTION_TEST', 'AUDIT_TEST', 'FINAL_ROUND', 'OPERATOR_WIN', 'DISRUPTOR_WIN'];
+  for (const scenario of scenarios) {
+    const code = await openScenario(page, scenario);
+    const before = (await state(page, code)).game;
+    await page.reload();
+    await expect(page.locator('.bo-game')).toBeVisible();
+    const after = (await state(page, code)).game;
+    expect(after.phase, scenario).toBe(before.phase);
+    expect(after.round, scenario).toBe(before.round);
+    expect(after.stability, scenario).toEqual(before.stability);
+    expect(after.crisis, scenario).toBe(before.crisis);
+    expect(after.lead, scenario).toBe(before.lead);
+    expect(after.orders, scenario).toEqual(before.orders);
+    expect(after.self, scenario).toEqual(before.self);
+    expect(after.truth, scenario).toEqual(before.truth);
+  }
+});
+
+test('a retried assignment action is acknowledged once without duplicate history', async ({ page }) => {
+  const code = await openScenario(page, 'ASSIGNMENT_TEST');
+  const ids = (await state(page, code)).seats.map((seat: { id: string }) => seat.id);
+  const acknowledged = await page.evaluate(({ code, teams }) => new Promise<boolean>((resolve, reject) => {
+    const socket = new WebSocket(`${location.origin.replace(/^http/, 'ws')}/ws?table=${code}`);
+    const id = crypto.randomUUID();
+    const message = JSON.stringify({ type: 'GAME_ACTION', id, action: { type: 'SET_TEAMS', teams } });
+    let retried = false;
+    const timer = setTimeout(() => { socket.close(); reject(Error('Assignment retry did not finish.')); }, 5000);
+    socket.onopen = () => socket.send(message);
+    socket.onmessage = event => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'STATE' && data.state.game?.orders?.[0]?.responders.length === 2 && !retried) { retried = true; socket.send(message); }
+      if (data.type === 'ACTION_ACK' && data.id === id) { clearTimeout(timer); socket.close(); resolve(true); }
+      if (data.type === 'ACTION_REJECTED') { clearTimeout(timer); socket.close(); reject(Error(data.error)); }
+    };
+  }), { code, teams: [ids.slice(0, 2), ids.slice(2, 4)] });
+  expect(acknowledged).toBe(true);
+  const game = (await state(page, code)).game;
+  expect(game.history.filter((entry: { text: string }) => entry.text.includes('assigned') && entry.text.includes('to '))).toHaveLength(1);
+});
