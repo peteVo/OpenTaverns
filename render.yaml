@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: opentaverns
+    runtime: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm start -w @opentaverns/server
+    healthCheckPath: /health

@@ -1,0 +1,7 @@
+{
+  "name": "@opentaverns/server",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "dev": "tsx watch src/index.ts --development", "build": "esbuild src/index.ts --bundle --platform=node --format=esm --external:ws --external:zod --external:cookie --outfile=dist/index.js", "start": "node dist/index.js" },
+  "dependencies": { "@opentaverns/hearthlands": "*", "@opentaverns/saigon-grid": "*", "cookie": "^1.0.2", "ws": "^8.18.3", "zod": "^4.1.5" }
+}
