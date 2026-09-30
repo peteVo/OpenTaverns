@@ -1,0 +1,29 @@
+/* Tidecall: printed navigation table. Existing games retain their own tokens. */
+:root {
+  --color-tc-paper: oklch(95% .018 88);
+  --color-tc-card: oklch(98% .012 88);
+  --color-tc-ink: oklch(28% .04 225);
+  --color-tc-sea: oklch(33% .05 222);
+  --color-tc-line: oklch(75% .025 205);
+  --color-tc-muted: oklch(45% .035 225);
+  --color-tc-wave: oklch(45% .085 231);
+  --color-tc-wind: oklch(42% .06 150);
+  --color-tc-reef: oklch(45% .09 32);
+  --color-tc-sun: oklch(48% .09 75);
+  --color-tc-accent: oklch(73% .095 78);
+  --color-tc-focus: oklch(53% .12 245);
+  --color-tc-shadow: oklch(18% .028 230 / .2);
+  --font-tc-display: Fraunces, Georgia, serif;
+  --font-tc-body: 'DM Sans', sans-serif;
+  --space-tc-sm: 8px;
+  --space-tc-md: 16px;
+  --space-tc-lg: 24px;
+  --space-tc-xl: 32px;
+  --text-tc-body: 1rem;
+  --text-tc-display: clamp(2.8rem,5vw,4.5rem);
+  --ease-tc-out: cubic-bezier(.2,.8,.2,1);
+  --ease-tc-in: cubic-bezier(.5,0,1,1);
+  --ease-tc-in-out: cubic-bezier(.4,0,.2,1);
+  --dur-tc-quick: 180ms;
+  --radius-tc-card: 9px;
+}

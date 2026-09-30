@@ -15,9 +15,12 @@ import { createScenario, scenarioNames } from '@opentaverns/saigon-grid/scenario
 import * as blackout from '@opentaverns/blackout';
 import { nextBotAction as nextBlackoutBotAction } from '@opentaverns/blackout/simulate';
 import { createScenario as createBlackoutScenario, scenarioNames as blackoutScenarioNames } from '@opentaverns/blackout/scenarios';
+import * as tidecall from '@opentaverns/tidecall';
+import { nextBotAction as nextTidecallBotAction } from '@opentaverns/tidecall/simulate';
+import { createScenario as createTidecallScenario, scenarioNames as tidecallScenarioNames } from '@opentaverns/tidecall/scenarios';
 
 type Seat = { id: string; name: string; token?: string; connected: boolean; bot: boolean };
-type Room = { code: string; inviteUrl: string; gameId: 'hearthlands' | 'saigon-grid' | 'blackout'; host: string; seats: Seat[]; spectators: Map<string, string>; game: Game | grid.Game | blackout.Game | null; sockets: Map<string, Set<WebSocket>>; controllers: Map<string, WebSocket>; seenActions: Set<string>; created: number; seed: number; debugSeed: boolean; botTurn: string; botActionsThisTurn: number; botsRunning: boolean; deadlineAt: number | null; graceUsed: boolean; pacing: blackout.Pacing };
+type Room = { matchId: string; code: string; inviteUrl: string; gameId: 'hearthlands' | 'saigon-grid' | 'blackout' | 'tidecall'; host: string; seats: Seat[]; spectators: Map<string, string>; game: Game | grid.Game | blackout.Game | tidecall.Game | null; sockets: Map<string, Set<WebSocket>>; controllers: Map<string, WebSocket>; seenActions: Set<string>; created: number; seed: number; debugSeed: boolean; botTurn: string; botActionsThisTurn: number; botsRunning: boolean; deadlineAt: number | null; graceUsed: boolean; pacing: blackout.Pacing };
 const rooms = new Map<string, Room>();
 const development = process.argv.includes('--development');
 const port = Number(process.argv.find(arg => arg.startsWith('--port='))?.slice(7) || process.env.PORT || 3000);
@@ -60,7 +63,13 @@ const blackoutActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('ADVANCE_RESOLUTION') }), z.object({ type: z.literal('CAST_AUDIT_VOTE'), choice: z.string().regex(/^R[1-8][AB]$/).nullable() }),
   z.object({ type: z.literal('END_ROUND') }),
 ]);
-const messageSchema = z.object({ type: z.literal('GAME_ACTION'), id: z.uuid(), expectedRevision: numberSchema.optional(), action: z.unknown() }).strict();
+const messageSchema = z.object({ type: z.literal('GAME_ACTION'), id: z.uuid(), expectedRevision: numberSchema.optional(), matchId: z.string().optional(), action: z.unknown() }).strict();
+const tidecallActionSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('LOCK_FORECAST'), round: numberSchema, value: numberSchema }).strict(),
+  z.object({ type: z.literal('LOCK_COMPASS'), round: numberSchema, adjustment: z.union([z.literal(-1),z.literal(0),z.literal(1)]) }).strict(),
+  z.object({ type: z.literal('PLAY_CARD'), round: numberSchema, trick: numberSchema, card: z.string().regex(/^(WAVE|WIND|REEF|SUN)-(1[0-3]|[1-9])$/) }).strict(),
+  z.object({ type: z.literal('ADVANCE'), round: numberSchema, phase: z.enum(['DEALING','TIDE_REVEAL','FORECAST_REVEAL','COMPASS_REVEAL','TRICK_RESOLUTION','ROUND_SCORING']) }).strict(),
+]);
 const send = (res: ServerResponse, status: number, data: unknown) => { res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(JSON.stringify(data)); };
 function sameOrigin(req: IncomingMessage) {
   const origin = req.headers.origin;
@@ -100,14 +109,14 @@ function inviteUrl(req: IncomingMessage, codeValue: string) {
   url.hash = '';
   return url.toString();
 }
-function roomView(room: Room, sessionToken: string): { code: string; inviteUrl: string; gameId: string; host: string; self: string | null; spectator: boolean; seats: { id: string; name: string; connected: boolean; bot: boolean }[]; game: View | grid.View | blackout.View | null; deadlineAt: number | null } {
+function roomView(room: Room, sessionToken: string): { matchId: string; code: string; inviteUrl: string; gameId: string; host: string; self: string | null; spectator: boolean; seats: { id: string; name: string; connected: boolean; bot: boolean }[]; game: View | grid.View | blackout.View | tidecall.View | null; deadlineAt: number | null } {
   const seat = viewer(room, sessionToken);
   const eliminated = room.gameId === 'saigon-grid' && (room.game as grid.Game | null)?.players.find(p => p.id === seat?.id)?.eliminated;
-  return { code: room.code, inviteUrl: room.inviteUrl, gameId: room.gameId, host: room.host, self: eliminated ? null : seat?.id ?? null, spectator: !seat || !!eliminated, seats: room.seats.map(({ id, name, connected, bot }) => ({ id, name, connected, bot })), game: room.game ? room.gameId === 'saigon-grid' ? grid.project(room.game as grid.Game) : room.gameId === 'blackout' ? blackout.project(room.game as blackout.Game, seat?.id ?? null) : project(room.game as Game, seat?.id) : null, deadlineAt: room.deadlineAt };
+  return { matchId: room.matchId, code: room.code, inviteUrl: room.inviteUrl, gameId: room.gameId, host: room.host, self: eliminated ? null : seat?.id ?? null, spectator: !seat || !!eliminated, seats: room.seats.map(({ id, name, connected, bot }) => ({ id, name, connected, bot })), game: room.game ? room.gameId === 'tidecall' ? tidecall.project(room.game as tidecall.Game, seat?.id ?? null) : room.gameId === 'saigon-grid' ? grid.project(room.game as grid.Game) : room.gameId === 'blackout' ? blackout.project(room.game as blackout.Game, seat?.id ?? null) : project(room.game as Game, seat?.id) : null, deadlineAt: room.deadlineAt };
 }
 const phaseSeconds: Record<blackout.Pacing, number[]> = { RELAXED: [240,240,480,240,180,180,120,180], STANDARD: [120,120,240,120,90,90,60,90], FAST: [60,60,90,60,45,45,35,45] };
 const timedPhases: blackout.Phase[] = ['ROLE_REVEAL','INCIDENT_REVEAL','BRIEFING','ASSIGNMENT','SECRET_ACTION','RESOLUTION','AUDIT_VOTE','ROUND_END'];
-function setDeadline(room: Room) { if (room.gameId !== 'blackout' || !room.game) return; const index = timedPhases.indexOf(room.game.phase as blackout.Phase); room.deadlineAt = index < 0 ? null : Date.now() + phaseSeconds[room.pacing][index]! * 1000; room.graceUsed = false; }
+function setDeadline(room: Room) { if (!room.game) return; if (room.gameId === 'tidecall') { const phase = room.game.phase; const decisions = room.pacing === 'RELAXED' ? [180,120,90] : room.pacing === 'STANDARD' ? [90,60,45] : [45,30,20]; const seconds = phase === 'MATCH_OVER' ? null : phase === 'FORECAST_REQUIRED' ? decisions[0]! : phase === 'COMPASS_REQUIRED' ? decisions[1]! : phase === 'TRICK_PLAY' ? decisions[2]! : phase === 'ROUND_SCORING' ? 25 : 2; room.deadlineAt = seconds === null ? null : Date.now()+seconds*1000; room.graceUsed = false; return; } if (room.gameId !== 'blackout') return; const index = timedPhases.indexOf(room.game.phase as blackout.Phase); room.deadlineAt = index < 0 ? null : Date.now() + phaseSeconds[room.pacing][index]! * 1000; room.graceUsed = false; }
 function broadcast(room: Room) {
   for (const [sessionToken, sockets] of room.sockets) {
     const message = JSON.stringify({ type: 'STATE', state: roomView(room, sessionToken) });
@@ -117,7 +126,7 @@ function broadcast(room: Room) {
 function reconnect(room: Room, sessionToken: string, connected: boolean) {
   const seat = viewer(room, sessionToken); if (!seat) return;
   seat.connected = connected;
-  if (!connected && room.gameId === 'blackout' && room.deadlineAt && !room.graceUsed) { room.deadlineAt += 30000; room.graceUsed = true; }
+  if (!connected && (room.gameId === 'blackout' || room.gameId === 'tidecall') && room.deadlineAt && !room.graceUsed) { room.deadlineAt += 30000; room.graceUsed = true; }
   if (room.game) { const p = room.game.players.find(p => p.id === seat.id); if (p) p.connected = connected; }
   if (connected && !room.seats.find(s => s.id === room.host)?.connected) room.host = seat.id;
   if (!connected && room.host === seat.id) { const next = room.seats.find(s => !s.bot && s.connected && s.id !== seat.id); if (next) room.host = next.id; }
@@ -131,6 +140,15 @@ async function runBotTurns(room: Room) {
   try {
     while (room.game && room.game.phase !== 'GAME_OVER' && actions < 100) {
       actions++;
+      if (room.gameId === 'tidecall') {
+        const game = room.game as tidecall.Game;
+        if (!['FORECAST_REQUIRED','COMPASS_REQUIRED','TRICK_PLAY'].includes(game.phase)) return;
+        const choice = room.seats.filter(s => s.bot).map(s => ({ actor: s.id, action: nextTidecallBotAction(tidecall.project(game,s.id),s.id) })).find(c => c.action);
+        if (!choice?.action) return;
+        actor = choice.actor; room.game = tidecall.applyAction(game,actor,choice.action);
+        if (room.game.phase !== game.phase || (room.game as tidecall.Game).trick.current !== game.trick.current) setDeadline(room);
+        broadcast(room); await new Promise(resolve => setTimeout(resolve, 220)); continue;
+      }
       if (room.gameId === 'blackout') {
         const game = room.game as blackout.Game;
         const choice = room.seats.filter(seat => seat.bot).map(seat => ({ actor: seat.id, action: nextBlackoutBotAction(blackout.project(game, seat.id), seat.id) })).find(item => item.action);
@@ -179,22 +197,23 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
     if (req.method === 'POST' && !sameOrigin(req)) { send(res, 403, { error: 'This request came from another site.' }); return; }
     const sessionToken = session(req, res);
     if (req.method === 'POST' && url.pathname === '/api/tables') {
-      const input = z.object({ name: z.string(), gameId: z.enum(['hearthlands', 'saigon-grid', 'blackout']), seed: z.number().int().min(0).max(0xffffffff).optional(), scenario: z.string().optional(), pacing: z.enum(['RELAXED','STANDARD','FAST']).optional() }).parse(await body(req));
+      const input = z.object({ name: z.string(), gameId: z.enum(['hearthlands', 'saigon-grid', 'blackout', 'tidecall']), seed: z.number().int().min(0).max(0xffffffff).optional(), scenario: z.string().optional(), pacing: z.enum(['RELAXED','STANDARD','FAST']).optional() }).parse(await body(req));
       const name = safeName(input.name); if (!name) throw Error('Enter a display name.');
       if (input.seed !== undefined && !development) throw Error('A custom seed is available only in development.');
-      if (input.scenario && (!development || input.gameId === 'hearthlands' || input.gameId === 'saigon-grid' && !scenarioNames.includes(input.scenario as typeof scenarioNames[number]) || input.gameId === 'blackout' && !blackoutScenarioNames.includes(input.scenario as typeof blackoutScenarioNames[number]))) throw Error('That scenario is available only for its game in development.');
+      if (input.scenario && (!development || input.gameId === 'hearthlands' || input.gameId === 'saigon-grid' && !scenarioNames.includes(input.scenario as typeof scenarioNames[number]) || input.gameId === 'blackout' && !blackoutScenarioNames.includes(input.scenario as typeof blackoutScenarioNames[number]) || input.gameId === 'tidecall' && !tidecallScenarioNames.includes(input.scenario as typeof tidecallScenarioNames[number]))) throw Error('That scenario is available only for its game in development.');
       let roomCode = code(); while (rooms.has(roomCode)) roomCode = code();
       const seat = { id: id(), name, token: sessionToken, connected: false, bot: false };
-      const room: Room = { code: roomCode, inviteUrl: inviteUrl(req, roomCode), gameId: input.gameId, host: seat.id, seats: [seat], spectators: new Map(), game: null, sockets: new Map(), controllers: new Map(), seenActions: new Set(), created: Date.now(), seed: input.seed ?? randomInt(0, 0x100000000), debugSeed: input.seed !== undefined, botTurn: '', botActionsThisTurn: 0, botsRunning: false, deadlineAt: null, graceUsed: false, pacing: input.pacing ?? 'RELAXED' };
+      const room: Room = { matchId: id(), code: roomCode, inviteUrl: inviteUrl(req, roomCode), gameId: input.gameId, host: seat.id, seats: [seat], spectators: new Map(), game: null, sockets: new Map(), controllers: new Map(), seenActions: new Set(), created: Date.now(), seed: input.seed ?? randomInt(0, 0x100000000), debugSeed: input.seed !== undefined, botTurn: '', botActionsThisTurn: 0, botsRunning: false, deadlineAt: null, graceUsed: false, pacing: input.pacing ?? 'RELAXED' };
       if (input.scenario) {
-        const botCount = input.gameId === 'blackout' ? 4 : 1;
-        for (let index = 0; index < botCount; index++) room.seats.push({ id: id(), name: input.gameId === 'blackout' ? `Relief ${index + 1}` : 'Courier 1', connected: true, bot: true });
-        room.game = input.gameId === 'blackout' ? createBlackoutScenario(input.scenario as typeof blackoutScenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createScenario(input.scenario as typeof scenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed);
+        const botCount = input.gameId === 'blackout' ? 4 : input.gameId === 'tidecall' ? input.scenario === 'SIX_PLAYER_TRICK' ? 5 : 3 : 1;
+        for (let index = 0; index < botCount; index++) room.seats.push({ id: id(), name: input.gameId === 'tidecall' ? `Navigator ${index+1}` : input.gameId === 'blackout' ? `Relief ${index + 1}` : 'Courier 1', connected: true, bot: true });
+        room.game = input.gameId === 'tidecall' ? createTidecallScenario(input.scenario as typeof tidecallScenarioNames[number], room.seats.map(({id,name}) => ({id,name})), room.seed) : input.gameId === 'blackout' ? createBlackoutScenario(input.scenario as typeof blackoutScenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createScenario(input.scenario as typeof scenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed);
         room.game.players[0]!.connected = false; setDeadline(room);
+        if (input.gameId === 'tidecall') room.deadlineAt = null; // Development snapshots stay still until an action.
       }
       rooms.set(roomCode, room); send(res, 201, roomView(room, sessionToken)); return;
     }
-    const match = url.pathname.match(/^\/api\/tables\/([A-Z0-9]{6})(?:\/(join|start|bots))?$/i);
+    const match = url.pathname.match(/^\/api\/tables\/([A-Z0-9]{6})(?:\/(join|start|bots|rematch))?$/i);
     if (!match) { send(res, 404, { error: 'Table not found.' }); return; }
     const room = roomFor(match[1]!);
     if (req.method === 'GET' && !match[2]) { if (!viewer(room, sessionToken) && !room.spectators.has(sessionToken)) throw Error('Join this table first.'); send(res, 200, roomView(room, sessionToken)); return; }
@@ -210,7 +229,7 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
     if (req.method === 'POST' && match[2] === 'bots') {
       const seat = viewer(room, sessionToken); if (!seat || room.host !== seat.id) throw Error('Only the host can manage bot players.');
       const input = z.object({ replaceSeatId: z.string().optional() }).strict().parse(await body(req));
-      if (room.game && (!input.replaceSeatId || room.gameId === 'hearthlands')) throw Error('Only an Away Saigon Grid or Blackout player may become a bot during a match.');
+      if (room.game && (!input.replaceSeatId || room.gameId === 'hearthlands')) throw Error('Only an Away Saigon Grid, Blackout or Tidecall player may become a bot during a match.');
       if (input.replaceSeatId) {
         const index = room.seats.findIndex(s => s.id === input.replaceSeatId);
         const away = room.seats[index];
@@ -227,12 +246,22 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
     if (req.method === 'POST' && match[2] === 'start') {
       const seat = viewer(room, sessionToken); if (!seat || room.host !== seat.id) throw Error('Only the host can start.');
       if (room.game) throw Error('This match has already started.');
-      if (room.seats.length < (room.gameId === 'blackout' ? 5 : room.gameId === 'saigon-grid' ? 2 : 3) || room.seats.length > (room.gameId === 'blackout' ? 10 : 6)) throw Error(`${room.gameId === 'blackout' ? 'Blackout needs 5–10' : room.gameId === 'saigon-grid' ? 'Saigon Grid needs 2–6' : 'Hearthlands needs 3–6'} players.`);
+      if (room.seats.length < (room.gameId === 'blackout' ? 5 : room.gameId === 'saigon-grid' ? 2 : 3) || room.seats.length > (room.gameId === 'blackout' ? 10 : 6)) throw Error(`${room.gameId === 'blackout' ? 'Blackout needs 5–10' : room.gameId === 'saigon-grid' ? 'Saigon Grid needs 2–6' : room.gameId === 'tidecall' ? 'Tidecall needs 3–6' : 'Hearthlands needs 3–6'} players.`);
       if (room.seats.some(s => !s.bot && !s.connected)) throw Error('Wait for every player to connect or replace an Away player with a bot.');
-      room.game = room.gameId === 'blackout' ? blackout.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.pacing) : room.gameId === 'saigon-grid' ? grid.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.debugSeed ? undefined : privateRandom());
+      room.game = room.gameId === 'tidecall' ? tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing) : room.gameId === 'blackout' ? blackout.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.pacing) : room.gameId === 'saigon-grid' ? grid.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.debugSeed ? undefined : privateRandom());
       for (const p of room.game.players) p.connected = room.seats.find(s => s.id === p.id)!.connected;
       setDeadline(room);
       broadcast(room); send(res, 200, roomView(room, sessionToken)); void runBotTurns(room); return;
+    }
+    if (req.method === 'POST' && match[2] === 'rematch') {
+      const seat = viewer(room, sessionToken); if (!seat || room.host !== seat.id) throw Error('Only the host can begin a rematch.');
+      if (room.gameId !== 'tidecall' || room.game?.phase !== 'MATCH_OVER') throw Error('Finish this Tidecall match first.');
+      if (room.seats.some(s => !s.bot && !s.connected)) throw Error('Reconnect every Away player or explicitly replace their seat with a bot.');
+      room.seed = room.debugSeed ? room.seed : randomInt(0,0x100000000);
+      room.matchId = id();
+      room.game = tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing);
+      // Retain action IDs across matches so a retry from the previous match stays a duplicate.
+      setDeadline(room); broadcast(room); send(res,200,roomView(room,sessionToken)); return;
     }
     send(res, 405, { error: 'That request is unavailable.' });
   } catch (error) { send(res, 400, { error: error instanceof z.ZodError ? 'Check the details you entered.' : error instanceof Error ? error.message : 'Request failed.' }); }
@@ -280,7 +309,15 @@ server.on('upgrade', (req, socket, head) => {
         if (room.controllers.get(sessionToken) !== ws) throw Error('A newer tab controls this seat.');
         const actionKey = `${seat.id}:${message.id}`;
         if (room.seenActions.has(actionKey)) { ws.send(JSON.stringify({ type: 'ACTION_ACK', id: message.id })); return; }
-        if (room.gameId === 'blackout') {
+        if (room.gameId === 'tidecall') {
+          if (message.matchId !== room.matchId) throw Error('That action belongs to a previous match.');
+          const action = tidecallActionSchema.parse(message.action) as tidecall.Action;
+          const game = room.game as tidecall.Game;
+          const independent = ['LOCK_FORECAST','LOCK_COMPASS'].includes(action.type);
+          if (!independent && message.expectedRevision !== undefined && message.expectedRevision !== game.revision) throw Error('The table changed. Review the latest state and try again.');
+          room.game = tidecall.applyAction(game,seat.id,action);
+          if (room.game.phase !== game.phase || (room.game as tidecall.Game).trick.current !== game.trick.current) setDeadline(room);
+        } else if (room.gameId === 'blackout') {
           const action = blackoutActionSchema.parse(message.action) as blackout.Action;
           const game = room.game as blackout.Game;
           const independent = ['CONFIRM_ROLE','LOCK_RESPONSE','CAST_AUDIT_VOTE'].includes(action.type);
@@ -311,6 +348,11 @@ const heartbeat = setInterval(() => {
 }, 30000);
 const blackoutClock = setInterval(() => {
   for (const room of rooms.values()) {
+    if (room.gameId === 'tidecall' && room.deadlineAt && Date.now() >= room.deadlineAt && room.game && room.game.phase !== 'MATCH_OVER') {
+      try { room.game = tidecall.applyAction(room.game as tidecall.Game,'@system',{type:'TIMEOUT'}); setDeadline(room); broadcast(room); void runBotTurns(room); }
+      catch (error) { room.deadlineAt = null; console.error(`Tidecall timeout failed at table ${room.code}:`,error); }
+      continue;
+    }
     if (room.gameId !== 'blackout' || !room.deadlineAt || Date.now() < room.deadlineAt || !room.game || room.game.phase === 'GAME_OVER') continue;
     try { room.game = blackout.applyAction(room.game as blackout.Game, '@system', { type: 'TIMEOUT' }); setDeadline(room); broadcast(room); void runBotTurns(room); }
     catch (error) { room.deadlineAt = null; console.error(`Blackout timeout failed at table ${room.code}:`, error); }
@@ -321,3 +363,7 @@ server.on('close', () => { clearInterval(heartbeat); clearInterval(blackoutClock
 function shutdown() { for (const ws of wss.clients) ws.terminate(); server.close(); server.closeAllConnections(); }
 process.once('SIGINT', shutdown);
 process.once('SIGTERM', shutdown);
+
+
+
+

@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "concurrently -k \"npm run dev -w @opentaverns/server\" \"npm run dev -w @opentaverns/web\"",
-    "build": "npm run build -w @opentaverns/hearthlands && npm run build -w @opentaverns/saigon-grid && npm run build -w @opentaverns/blackout && npm run build -w @opentaverns/web && npm run build -w @opentaverns/server",
+    "build": "npm run typecheck && npm run build -w @opentaverns/web && npm run build -w @opentaverns/server",
     "test": "vitest run",
     "test:e2e": "npm run build && node scripts/test-e2e.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",

@@ -1,0 +1,27 @@
+import { test, expect, type Page } from '@playwright/test';
+test.skip(!process.env.OPENTAVERNS_E2E_SCENARIOS,'Development snapshots are disabled in production.');
+const scenarios=['DEALING_TEST','TIDE_REVEAL_TEST','FORECAST_TEST','FORECAST_LOCKED','FORECAST_REVEAL','COMPASS_TEST','COMPASS_LOCKED','COMPASS_REVEAL','NORMAL_TRICK','PARTIAL_TRICK','FOLLOW_SUIT_TEST','DOMINANT_SUIT_TEST','UNDERTOW_TEST','CROSSCURRENT_SWITCH','SHIFTING_TEST','FINAL_TRICK','TRICK_RESOLUTION','ROUND_SCORE','MATCH_OVER','RECONNECT_WITH_HAND','SIX_PLAYER_TRICK','SEVEN_CARD_HAND','FINAL_ROUND','VOID_IN_LEAD_SUIT'];
+async function open(page:Page,scenario:string){ await page.goto('/');const room=await page.evaluate(async scenario=>(await(await fetch('/api/tables',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:'Mariner',gameId:'tidecall',scenario,seed:42})})).json()),scenario); expect(room.error).toBeUndefined();await page.goto(`/t/${room.code}`);await expect(page.locator('.tc-game-heading')).toBeVisible();return room.code as string;}
+const state=(page:Page,code:string)=>page.evaluate(async code=>(await(await fetch(`/api/tables/${code}`)).json()),code);
+test('Tidecall desktop and mobile visual states, Rules and local choices',async({page})=>{
+  test.setTimeout(180000);
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  const pass=process.env.TIDECALL_QA_PASS||'pass1';
+  for(const viewport of [{width:1440,height:960},{width:390,height:844}]){
+    await page.setViewportSize(viewport);
+    await page.goto('/');await page.getByRole('button',{name:/Choose Tidecall/}).click();await page.screenshot({path:`test-results/tidecall-collection-${viewport.width}-${pass}.png`,fullPage:true});await page.getByPlaceholder('What should friends call you?').fill('Mariner');await page.getByRole('button',{name:/Create a table/}).click();await expect(page.locator('.tc-lobby')).toBeVisible();await page.getByRole('button',{name:'Add bot +'}).click();await page.getByRole('button',{name:'Add bot +'}).click();await page.screenshot({path:`test-results/tidecall-lobby-${viewport.width}-${pass}.png`,fullPage:true});await page.getByRole('button',{name:'Rules',exact:true}).click();await expect(page.getByRole('dialog',{name:'Tidecall rules'})).toBeVisible();await page.getByRole('button',{name:'Close rules'}).click();
+    for(const scenario of scenarios){
+      const code=await open(page,scenario);await page.screenshot({path:`test-results/tidecall-${scenario}-${viewport.width}-${pass}.png`,fullPage:true});
+      const before=(await state(page,code)).game;await page.reload();await expect(page.locator('.tc-game-heading')).toBeVisible();const after=(await state(page,code)).game;expect(after.phase).toBe(before.phase);expect(after.self.hand).toEqual(before.self.hand);expect(after.self.forecast).toBe(before.self.forecast);expect(after.self.compassDecision).toBe(before.self.compassDecision);
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    }
+    await open(page,'FORECAST_TEST');await page.getByRole('button',{name:'Forecast 2',exact:true}).click();await page.getByRole('button',{name:'Rules',exact:true}).click();await expect(page.getByRole('dialog',{name:'Tidecall rules'})).toBeVisible();await page.screenshot({path:`test-results/tidecall-rules-${viewport.width}-${pass}.png`,fullPage:true});await page.getByRole('button',{name:'Close rules'}).click();await expect(page.getByRole('button',{name:'Forecast 2',exact:true})).toHaveAttribute('aria-pressed','true');await page.reload();await expect(page.getByRole('button',{name:'Forecast 2',exact:true})).toHaveAttribute('aria-pressed','true');
+  }
+  for(const width of [320,375,414,768]){await page.setViewportSize({width,height:900});await open(page,'NORMAL_TRICK');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+  await page.setViewportSize({width:844,height:390});await page.emulateMedia({reducedMotion:'reduce'});await open(page,'NORMAL_TRICK');await page.screenshot({path:`test-results/tidecall-landscape-${pass}.png`,fullPage:true});await page.getByRole('button',{name:/, playable/}).first().focus();await page.keyboard.press('Enter');await expect(page.getByRole('button',{name:/Play card/})).toBeEnabled();await page.getByRole('button',{name:'Rules',exact:true}).click();await page.keyboard.press('Escape');await expect(page.getByRole('dialog',{name:'Tidecall rules'})).not.toBeVisible();expect(errors).toEqual([]);
+});
+
+test('rematch resets match state with the same seats and rejects repeats',async({page})=>{
+  const code=await open(page,'MATCH_OVER');const before=await state(page,code);await page.getByRole('button',{name:/Play Again/}).click();await expect.poll(async()=> (await state(page,code)).game.round).toBe(1);const after=await state(page,code);expect(after.code).toBe(before.code);expect(after.self).toBe(before.self);expect(after.host).toBe(before.host);expect(after.matchId).not.toBe(before.matchId);expect(after.seats.map((s:{id:string})=>s.id)).toEqual(before.seats.map((s:{id:string})=>s.id));expect(after.game.players.every((p:{score:number;compassUsed:boolean})=>p.score===0&&!p.compassUsed)).toBe(true);expect(after.game.rounds).toHaveLength(0);expect(after.game.self.forecast).toBeNull();expect((await page.request.post(`/api/tables/${code}/rematch`,{data:{}})).ok()).toBe(false);
+});
+
