@@ -1,0 +1,98 @@
+{
+  "game": "tidecall",
+  "players": 4,
+  "completed": 250,
+  "deadlocks": 0,
+  "invariantFailures": 0,
+  "illegalActions": 0,
+  "privacyFailures": 0,
+  "averageScores": 44.169,
+  "exactRate": 0.45409999999999995,
+  "errors": {
+    "0": 4541,
+    "1": 4454,
+    "2": 925,
+    "3": 73,
+    "4": 6,
+    "5": 1
+  },
+  "compass": 952,
+  "compassUp": 113,
+  "compassDown": 839,
+  "compassImproved": 575,
+  "zeroExact": 866,
+  "zeroSamples": 1133,
+  "averageTricks": 1.25,
+  "seatWins": [
+    65,
+    70,
+    64,
+    53
+  ],
+  "tideStats": {
+    "Reefline": {
+      "rounds": 303,
+      "exact": 544,
+      "scores": 5222,
+      "compass": 127,
+      "leaderTricks": 349,
+      "samples": 1212
+    },
+    "High Tide": {
+      "rounds": 309,
+      "exact": 548,
+      "scores": 5321,
+      "compass": 136,
+      "leaderTricks": 372,
+      "samples": 1236
+    },
+    "Crosscurrent": {
+      "rounds": 310,
+      "exact": 547,
+      "scores": 5423,
+      "compass": 324,
+      "leaderTricks": 368,
+      "samples": 1240
+    },
+    "Undertow": {
+      "rounds": 303,
+      "exact": 580,
+      "scores": 5681,
+      "compass": 33,
+      "leaderTricks": 406,
+      "samples": 1212
+    },
+    "Sunbreak": {
+      "rounds": 328,
+      "exact": 539,
+      "scores": 4801,
+      "compass": 116,
+      "leaderTricks": 398,
+      "samples": 1312
+    },
+    "Tailwind": {
+      "rounds": 311,
+      "exact": 554,
+      "scores": 5518,
+      "compass": 124,
+      "leaderTricks": 361,
+      "samples": 1244
+    },
+    "Shifting Current": {
+      "rounds": 327,
+      "exact": 645,
+      "scores": 6513,
+      "compass": 44,
+      "leaderTricks": 464,
+      "samples": 1308
+    },
+    "Calm Water": {
+      "rounds": 309,
+      "exact": 584,
+      "scores": 5690,
+      "compass": 48,
+      "leaderTricks": 427,
+      "samples": 1236
+    }
+  }
+}

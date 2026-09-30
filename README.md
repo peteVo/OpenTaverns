@@ -1,6 +1,6 @@
 # OpenTaverns
 
-OpenTaverns is a browser table for friends with three original games. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. **Blackout** is a 5–10 player hidden-role game about keeping a fictional city working through eight shifts. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
+OpenTaverns is a browser table for friends with four original games. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. **Blackout** is a 5–10 player hidden-role game about keeping a fictional city working through eight shifts. **Tidecall** is a 3–6 player prediction and trick-taking game with private hands and changing Tides. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
 
 ![Hearthlands board on desktop](docs/images/hearthlands-desktop.png)
 
@@ -13,6 +13,10 @@ OpenTaverns is a browser table for friends with three original games. **Hearthla
 ![Blackout city systems and response assignment](docs/images/qa/blackout-assignment-desktop-final.png)
 
 [See Blackout's private phone response](docs/images/qa/blackout-operator-mobile-final.png) and [post-game truth](docs/images/qa/blackout-truth-mobile-final.png).
+
+![Tidecall navigation table](docs/images/qa/tidecall-trick-desktop-final.png)
+
+[See Tidecall's phone Forecast](docs/images/qa/tidecall-forecast-mobile-final.png), [six-player trick](docs/images/qa/tidecall-six-player-mobile-final.png), and [shared Rules](docs/images/qa/tidecall-rules-mobile-final.png).
 
 ## Start locally
 
@@ -54,6 +58,8 @@ Run `npm run dev` on the host computer. Open `http://HOST_IP:5173` from devices 
 | `npm run simulate -- --games 100 --players 5 --seed 482913` | Reproduce a simulation range |
 | `npm run simulate -- --game saigon-grid --games 1000` | Saigon Grid bot simulations |
 | `npm run simulate -- --game blackout --games 1000 --players 10` | Blackout bot simulations, 5–10 seats |
+| `npm run simulate -- --game tidecall --games 1000 --players 4` | Tidecall simulations, 3–6 seats; privacy, scoring and Tide metrics |
+| `node scripts/tidecall-scoring.mjs` | Compare Tidecall scoring candidates and unconditional zero strategy |
 
 ## How Hearthlands works
 
@@ -82,18 +88,25 @@ Players travel a 28-stop metropolitan circuit, buy real Ho Chi Minh City street 
 
 Every player has a secret faction and an unrelated public profession. Most are Operators; a minority are Disruptors who know one another. Each Incident opens two Work Orders. The rotating Shift Lead assigns separate teams, and assigned players privately lock Stabilize, Diagnose, or, for Disruptors, Interfere. Diagnose sacrifices progress for shared Insight, so a failed order is not proof of sabotage. Two Insight can fund a private simultaneous Audit vote; an Audit reveals the number of Interfere actions on one order, never the actor.
 
-The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all three games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
+The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all four games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
+
+## How Tidecall works
+
+Ten rounds follow a 3→4→5→6→7→7→6→5→4→3 card arc. Wave, Wind, Reef and Sun each have ranks 1–13. The dealer rotates and the player after them leads first. A public Tide changes dominance or rank order; players always follow the lead suit when able. Forecasts lock privately and reveal together. One Compass per match allows a simultaneous private ±1 correction before the first trick. Exact calls score 12 + 3 per predicted trick; misses lose 4 per trick apart. Highest total wins, then most exact rounds, then shared victory.
+
+Only your own hand and pending choices reach your device. Spectators see played cards and public results. Reconnect restores your seat and locked decisions. The host can replace an Away seat with a bot without changing its hand or score. At the end, Play Again keeps the Table, crew and spectators while resetting the match. Relaxed, Standard and Fast pacing have safe timeout defaults. The same Rules sheet works in the lobby and match. See [Tidecall's engine, privacy and balance guide](docs/tidecall-engine.md) and [visual QA record](docs/tidecall-visual-audit.md).
 
 ## Architecture
 
 - `packages/hearthlands`: deterministic, headless TypeScript rules, topology, projections, replay, invariants, tests, and bots that act from their own projected view.
 - `packages/saigon-grid`: separate deterministic, headless city rules, transactions, events, scenarios, invariants, tests, and bots.
 - `packages/blackout`: deterministic simultaneous-action rules, private projections, Incidents, professions, bots, replay, invariants, and development scenarios.
+- `packages/tidecall`: deterministic card rules, eight Tides, private hands and simultaneous locks, scoring, replay, bots, invariants and scenarios.
 - `apps/server`: shared room and session management, runtime message validation, game dispatch, authoritative actions, WebSocket state delivery, and static hosting.
-- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all three games. The client proposes actions; it never decides their validity.
+- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all four games. The client proposes actions; it never decides their validity. Game renderers load on demand.
 - `tests/e2e`: multi-browser create/join, a complete six-seat match through victory, refresh and disconnect recovery, host transfer, trade races, security checks, and desktop/mobile screenshots.
 
-The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All three rule states serialize as JSON, which permits a future durable store without changing the rules packages.
+The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All four rule states serialize as JSON, which permits a future durable store without changing the rules packages.
 
 See [architecture](docs/architecture.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
 
@@ -111,4 +124,4 @@ Do not scale this version to multiple instances: rooms are process-local, and a 
 
 ## Current limits and next steps
 
-Tables live in server memory, so a server restart or replacement ends ongoing games. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. The immediate next engineering step for durable public play is shared persistence plus restart recovery. The three rules packages remain separate from room/session code.
+Tables live in server memory, so a server restart or replacement ends ongoing games. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. The immediate next engineering step for durable public play is shared persistence plus restart recovery. The four rules packages remain separate from room/session code.

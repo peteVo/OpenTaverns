@@ -1,10 +1,10 @@
 # OpenTaverns design
 
-**Creative north star:** a contemporary place for friends to open a shared table. The platform frames each game; the game becomes the main object. The two games have distinct visual languages while sharing an invitation, wordmark, clear controls, and player identity.
+**Creative north star:** a contemporary place for friends to open a shared table. The platform frames each game; the game becomes the main object. Four games have distinct visual languages while sharing an invitation, wordmark, clear controls, and player identity.
 
 ## Platform system
 
-- **Genre:** atmospheric tabletop editorial. A compact marquee introduces the collection; game selection uses an asymmetric two-volume shelf, not matching feature cards. Tables use a workbench layout. Rules read as a long document.
+- **Genre:** atmospheric tabletop editorial. A compact marquee introduces the collection; game selection uses an asymmetric four-volume shelf, not matching feature cards. Tables use a workbench layout. Rules read as a long document.
 - **Signature move:** each volume shows its own board grammar before a table is created. Hearthlands uses paths and Sites; Saigon Grid uses a street circuit and a river trace.
 - **Typography:** Fraunces (roman, 500) for display and game values; DM Sans (400–800) for instructions, controls, labels, and long text. Vietnamese proper names must render with their full diacritics. No decorative italic headlines.
 - **Shared colors:** charcoal `#262e29`, warm paper `#e9e6d9`, copper `#c58056`, and focus `#bd743b`. Accent is reserved for invitations, current action, and selection.
@@ -21,6 +21,12 @@
 | Palette | Mineral ground, terrain greens, ochre, clay | Blue-green transit ink, civic cream, rust |
 | Main object | 19-region SVG map with keyboard-accessible Sites and Links | 28-stop city circuit with public portfolios and a district summary center |
 | Actions | Construction and Materials beside the map | Purchase, auction, trade, and debt beside the circuit |
+
+## Blackout and Tidecall
+
+Blackout uses a civic night-shift schematic, public system nodes, and discrete private role/action controls. Tidecall uses a printed navigation table: ivory paper, deep sea contours, copper accents, original SVG suits, clear card corners and a deliberate select/Play interaction. Public Forecasts stay small; the table and private hand carry the composition. A short winner mark precedes collection. Mobile uses a compact Tide strip, two-column crew, a dedicated crowded-trick arrangement and horizontal hand. Unlocked decisions survive the shared Rules sheet and reload in the same tab.
+
+Tidecall color/font tokens live in root `tokens.css`, scoped by `tc` names so other games retain their established designs. Suit identity also uses symbols, patterns and text. Only actual game objects get rounded containers. Motion uses opacity and transforms; reduced motion keeps the same information without travel. The collection is a four-volume shelf with game-specific artwork, sizes and palettes.
 
 ## Design boundaries
 

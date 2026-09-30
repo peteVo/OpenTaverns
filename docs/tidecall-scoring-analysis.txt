@@ -1,0 +1,7 @@
+{"parameters":{"exact":10,"perTrick":2,"miss":5},"matches":80,"mean":27.283333333333335,"range":[-55,109],"meanWinningMargin":19.125,"zeroMean":6.6723259762308995,"nonzeroMean":1.9568249750913318,"oneMissCost":5,"exactZero":10,"exactThree":16,"compassImproved":197,"compassUsed":348}
+{"parameters":{"exact":12,"perTrick":3,"miss":4},"matches":80,"mean":47.86666666666667,"range":[-44,140],"meanWinningMargin":21.075,"zeroMean":8.482173174872665,"nonzeroMean":4.0637661906343405,"oneMissCost":4,"exactZero":12,"exactThree":21,"compassImproved":197,"compassUsed":348}
+{"parameters":{"exact":15,"perTrick":2,"miss":3},"matches":80,"mean":63.36666666666667,"range":[-33,156],"meanWinningMargin":21.825,"zeroMean":11.078098471986417,"nonzeroMean":5.409166389903686,"oneMissCost":3,"exactZero":15,"exactThree":21,"compassImproved":197,"compassUsed":348}
+{"policy":"always zero at seat 0 vs informed forecasts","players":3,"matches":30,"wins":1,"meanScore":-12.4}
+{"policy":"always zero at seat 0 vs informed forecasts","players":4,"matches":30,"wins":1,"meanScore":7.466666666666667}
+{"policy":"always zero at seat 0 vs informed forecasts","players":5,"matches":30,"wins":0,"meanScore":24.533333333333335}
+{"policy":"always zero at seat 0 vs informed forecasts","players":6,"matches":30,"wins":2,"meanScore":35.86666666666667}

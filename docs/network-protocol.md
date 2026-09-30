@@ -6,14 +6,21 @@ All HTTP and WebSocket traffic uses one origin. The server issues a random 256-b
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| `POST` | `/api/tables` | Create a Hearthlands or Saigon Grid table with display name and game ID; optional seed/scenario in development only |
+| `POST` | `/api/tables` | Create a table for any registered game with display name and game ID; optional seed/scenario in development only |
 | `POST` | `/api/tables/:code/join` | Claim or restore a seat, or enter as spectator |
 | `GET` | `/api/tables/:code` | Current projected room for this session |
-| `POST` | `/api/tables/:code/bots` | Host adds a bot or replaces an Away seat; Saigon Grid permits Away takeover during play |
-| `POST` | `/api/tables/:code/start` | Host starts Hearthlands with 3–6 or Saigon Grid with 2–6 connected seats |
+| `POST` | `/api/tables/:code/bots` | Host adds a bot or replaces an Away seat during play |
+| `POST` | `/api/tables/:code/start` | Host starts Hearthlands/Tidecall with 3–6, Saigon Grid with 2–6, or Blackout with 5–10 connected seats |
+| `POST` | `/api/tables/:code/rematch` | Host starts a fresh finished Tidecall match in the same Table |
 | `GET` | `/health` | Liveness |
 
 Creation has `{ "name": "Minh", "gameId": "saigon-grid" }`; join has `{ "name": "Linh", "spectator": false }`. A room view includes code, invitation URL, game ID, host ID, self ID or null, spectator flag, seat connection states, and that game's projection when started. Eliminated Saigon Grid players receive the spectator projection. A room code is not an authentication secret; the cookie is the seat credential.
+
+## Tidecall additions
+
+Create with `gameId: "tidecall"` and optional `pacing: "RELAXED" | "STANDARD" | "FAST"`. Start needs 3–6 connected seats. Away bot takeover works during a match and retains the same seat. `POST /api/tables/:code/rematch` is host-only, requires a finished Tidecall game and connected human seats, and preserves the Table and spectators.
+
+Room views include `matchId` and `deadlineAt`. Tidecall gameplay messages must include that match ID. Actions are `LOCK_FORECAST {round,value}`, `LOCK_COMPASS {round,adjustment}`, `PLAY_CARD {round,trick,card}`, and dealer `ADVANCE {round,phase}`. Server-only TIMEOUT is absent from the client schema. Forecast/Compass locks allow independent arrivals without a global-revision race; card/presentation actions enforce `expectedRevision`. Strict schemas reject client actor, scores, deck and outcome fields. An old match ID is rejected even if its round/trick numbers happen to match the new game.
 
 ## WebSocket
 

@@ -142,5 +142,3 @@ export function validateGame(game: Game) {
 export function serializeGame(game: Game) { return JSON.stringify(game); }
 export function restoreGame(text: string): Game { const game = JSON.parse(text) as Game; validateGame(game); return game; }
 export function replayGame(game: Game) { let result = createGame(game.players.map(({id,name}) => ({id,name})),game.startSeed,game.pacing); for (const item of game.actionLog) result = applyAction(result,item.actor,item.action); return result; }
-
-
