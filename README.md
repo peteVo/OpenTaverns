@@ -1,6 +1,6 @@
 # OpenTaverns
 
-OpenTaverns is a browser table for friends with four original games. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. **Blackout** is a 5–10 player hidden-role game about keeping a fictional city working through eight shifts. **Tidecall** is a 3–6 player prediction and trick-taking game with private hands and changing Tides. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
+OpenTaverns is a browser table for friends with four original games and Werewolf. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. **Blackout** is a 5–10 player hidden-role game about keeping a fictional city working through eight shifts. **Tidecall** is a 3–6 player prediction and trick-taking game with private hands and changing Tides. **Werewolf** is an 8–18 player adaptation of The Werewolves of Miller’s Hollow Classic, with private characters, an automatic moderator and optional Defender/Village Idiot roles. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
 
 ![Hearthlands board on desktop](docs/images/hearthlands-desktop.png)
 
@@ -17,6 +17,10 @@ OpenTaverns is a browser table for friends with four original games. **Hearthlan
 ![Tidecall navigation table](docs/images/qa/tidecall-trick-desktop-final.png)
 
 [See Tidecall's phone Forecast](docs/images/qa/tidecall-forecast-mobile-final.png), [six-player trick](docs/images/qa/tidecall-six-player-mobile-final.png), and [shared Rules](docs/images/qa/tidecall-rules-mobile-final.png).
+
+![Werewolf village on desktop](docs/images/qa/werewolf-village-desktop-final.png)
+
+[See the private phone decision](docs/images/qa/werewolf-witch-mobile-final.png), [engine and edition decisions](docs/werewolf-engine.md), and [role interactions](docs/werewolf-role-interactions.md).
 
 ## Start locally
 
@@ -42,7 +46,7 @@ Open `http://localhost:3000`. The server serves the built client and WebSockets 
 
 ## Saved tables and host management
 
-All four games save tables automatically to `data/` after every accepted action and room change, before sending the new state. Restart with the same data directory and players can reopen their original links using the same browser cookies. Private hands, roles, locked choices, scores, bots and retry IDs are retained. Human seats begin Away; timed matches pause until the first seated player reconnects, with at least 30 seconds to resume.
+All five games save tables automatically to `data/` after every accepted action and room change, before sending the new state. Restart with the same data directory and players can reopen their original links using the same browser cookies. Private hands, roles, locked choices, scores, bots and retry IDs are retained. Human seats begin Away; timed matches pause until the first seated player reconnects, with at least 30 seconds to resume.
 
 The server prints a **private Host management link** at startup. Open it to list all saved tables, reopen invitations and permanently delete tables. The collection footer also links to **Host register** at `/manage`; it requires the key from the private link. A deletion confirmation identifies the table and connected players. Deleting closes connected clients and removes the saved snapshot.
 
@@ -69,6 +73,7 @@ Run `npm run dev` on the host computer. Open `http://HOST_IP:5173` from devices 
 | `npm run simulate -- --game saigon-grid --games 1000` | Saigon Grid bot simulations |
 | `npm run simulate -- --game blackout --games 1000 --players 10` | Blackout bot simulations, 5–10 seats |
 | `npm run simulate -- --game tidecall --games 1000 --players 4` | Tidecall simulations, 3–6 seats; privacy, scoring and Tide metrics |
+| `npm run simulate -- --game werewolf --games 1000 --players 12` | Classic Werewolf bot simulation, 8–18 seats; add `--ruleset CLASSIC_PLUS` for Defender/Idiot |
 | `node scripts/tidecall-scoring.mjs` | Compare Tidecall scoring candidates and unconditional zero strategy |
 
 ## How Hearthlands works
@@ -98,7 +103,7 @@ Players travel a 28-stop metropolitan circuit, buy real Ho Chi Minh City street 
 
 Every player has a secret faction and an unrelated public profession. Most are Operators; a minority are Disruptors who know one another. Each Incident opens two Work Orders. The rotating Shift Lead assigns separate teams, and assigned players privately lock Stabilize, Diagnose, or, for Disruptors, Interfere. Diagnose sacrifices progress for shared Insight, so a failed order is not proof of sabotage. Two Insight can fund a private simultaneous Audit vote; an Audit reveals the number of Interfere actions on one order, never the actor.
 
-The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all four games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
+The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all five games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
 
 ## How Tidecall works
 
@@ -106,17 +111,24 @@ Ten rounds follow a 3→4→5→6→7→7→6→5→4→3 card arc. Wave, Wind, 
 
 Only your own hand and pending choices reach your device. Spectators see played cards and public results. Reconnect restores your seat and locked decisions. The host can replace an Away seat with a bot without changing its hand or score. At the end, Play Again keeps the Table, crew and spectators while resetting the match. Relaxed, Standard and Fast pacing have safe timeout defaults. The same Rules sheet works in the lobby and match. See [Tidecall's engine, privacy and balance guide](docs/tidecall-engine.md) and [visual QA record](docs/tidecall-visual-audit.md).
 
+## How Werewolf works
+
+Classic uses the publisher’s 2023 English rules, with familiar characters and a server moderator. Privately reveal your role, elect a public Sheriff, then alternate padded private nights with public discussion and simultaneous votes. Village must eliminate every wolf; wolves must eliminate every Villager. Parity is not victory. Lovers, Hunter reactions and Sheriff succession resolve completely before victory. The Witch has two independent potions; the Seer learns exact characters. Little Girl peeking has a clearly labelled uncertain digital adaptation.
+
+Classic Plus adds the verified New Moon Defender and Village Idiot. The host may use a recommended pool or build a validated Custom pool. Private prompts, knowledge and locked decisions survive reconnect/restart; bots inherit the same seat and character. After completion, a day-by-day truth reveal exposes all decisions, and Play Again deals fresh roles in the same Table. Rules are available without leaving the current action. See the [engine and source guide](docs/werewolf-engine.md), [interaction matrix](docs/werewolf-role-interactions.md), and [simulation results](docs/werewolf-simulation.json).
+
 ## Architecture
 
 - `packages/hearthlands`: deterministic, headless TypeScript rules, topology, projections, replay, invariants, tests, and bots that act from their own projected view.
 - `packages/saigon-grid`: separate deterministic, headless city rules, transactions, events, scenarios, invariants, tests, and bots.
 - `packages/blackout`: deterministic simultaneous-action rules, private projections, Incidents, professions, bots, replay, invariants, and development scenarios.
 - `packages/tidecall`: deterministic card rules, eight Tides, private hands and simultaneous locks, scoring, replay, bots, invariants and scenarios.
+- `packages/werewolf`: Classic and two verified expansion characters, private scheduler, queued death reactions, projections, replay, bots and scenarios.
 - `apps/server`: shared room and session management, runtime message validation, game dispatch, authoritative actions, WebSocket state delivery, and static hosting.
-- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all four games. The client proposes actions; it never decides their validity. Game renderers load on demand.
+- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all five games. The client proposes actions; it never decides their validity. Game renderers load on demand.
 - `tests/e2e`: multi-browser create/join, a complete six-seat match through victory, refresh and disconnect recovery, host transfer, trade races, security checks, and desktop/mobile screenshots.
 
-The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All four rule states serialize as JSON and are stored in atomic room snapshots without changing the rules packages.
+The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All five rule states serialize as JSON and are stored in atomic room snapshots without changing the rules packages.
 
 See [architecture](docs/architecture.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
 

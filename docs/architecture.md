@@ -30,8 +30,14 @@ Tidecall reuses room pacing, disconnect grace and bot takeover. The server advan
 
 Host-controlled rematch keeps the existing Table, current host, seats, cookies and spectators. It requires connected human seats or explicit bot replacement and resets only the selected game. Accepted action IDs remain registered and a new match ID prevents cross-match replay. Production uses a fresh seed. The platform still uses small explicit dispatch branches rather than a universal card-game framework.
 
-All four game modules supply structured content to the same Rules sheet. The client renders Tidecall through a lazy game chunk, using CSS/SVG cards and table contours. No new runtime dependency is required.
+All five game modules supply structured content to the same Rules sheet. The client renders Tidecall through a lazy game chunk, using CSS/SVG cards and table contours. No new runtime dependency is required.
 
 ## Adding a game
 
 Add a game package with serializable state, an authoritative action function, a viewer-specific projection, a client renderer, and a structured `rules` export. Extend the server's game ID dispatch. The shell renders every game's rules in one responsive, accessible sheet without leaving the table. The platform's room/session messages remain about participants and actions, without assuming hexes, property, cards, or one active turn.
+
+## Werewolf: private role schedule and death reactions
+
+Werewolf owns character distribution, Lover relationships, Sheriff office, padded night windows, private pack intentions, simultaneous votes and a deterministic death/reaction queue. It does not use parity victory. Server dispatch routes typed intentions into its pure engine and sends per-seat projections. Night public revisions stay unchanged while secret choices arrive; the server maintains fixed window deadlines even without an eligible character. Dead seats lose live private prompts except their own mandatory reaction. Final truth and replay become public only after completion.
+
+Werewolf uses the existing sessions, latest-tab policy, idempotent action IDs, grace, takeover, durable saves, Rules sheet and rematch transport. Its prompt window and match identifier reject stale actions while permitting independent simultaneous arrivals. Its lazy frontend chunk supplies an original SVG village and private phone controls. No generic social-game framework was introduced. See [Werewolf engine](werewolf-engine.md).

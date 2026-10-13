@@ -186,7 +186,7 @@ test('three friends start, play setup, refresh, and keep a spectator private', a
   await spectator!.screenshot({ path: 'test-results/spectator-desktop.png', fullPage: true });
   const state = await spectator!.evaluate(async code => (await (await fetch(`/api/tables/${code}`)).json()).game, code);
   expect(state.private).toBeNull(); expect(state.seed).toBeNull(); expect(JSON.stringify(state)).not.toContain('"deck"');
-  expect(await spectator!.evaluate(async code => (await fetch(`/api/debug/tables/${code}`)).status, code)).toBe(404);
+  expect(await spectator!.evaluate(async code => (await fetch(`/api/debug/tables/${code}`)).status, code)).toBe(process.env.OPENTAVERNS_E2E_SCENARIOS?200:404);
   const rejection = await spectator!.evaluate(code => new Promise<string>(resolve => { const ws = new WebSocket(`ws://${location.host}/ws?table=${code}`); ws.onopen = () => ws.send(JSON.stringify({ type: 'GAME_ACTION', id: crypto.randomUUID(), action: { type: 'ROLL' } })); ws.onmessage = e => { const m = JSON.parse(e.data); if (m.type === 'ACTION_REJECTED') { resolve(m.error); ws.close(); } }; }), code);
   expect(rejection).toContain('Spectators cannot play');
   expect(errors).toEqual([]);

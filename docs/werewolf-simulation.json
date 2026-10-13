@@ -1,0 +1,1281 @@
+{
+  "completed": 1100,
+  "deadlocks": 0,
+  "invariantFailures": 0,
+  "privacyFailures": 0,
+  "rows": [
+    {
+      "count": 8,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        10800,
+        10849
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 34,
+        "VILLAGE": 14,
+        "LOVERS": 1,
+        "NO_WINNER": 1
+      },
+      "averageDays": 3,
+      "nightDeaths": 133,
+      "voteDeaths": 133,
+      "potions": 34,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 165,
+          "wins": 31
+        },
+        "Werewolf": {
+          "seats": 91,
+          "wins": 64
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 14
+        },
+        "Witch": {
+          "seats": 23,
+          "wins": 12
+        },
+        "Cupid": {
+          "seats": 19,
+          "wins": 9
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 10
+        },
+        "Little Girl": {
+          "seats": 19,
+          "wins": 9
+        },
+        "Thief": {
+          "seats": 12,
+          "wins": 4
+        }
+      },
+      "actions": 4420
+    },
+    {
+      "count": 8,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        10800,
+        10849
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 23,
+        "VILLAGE": 16,
+        "LOVERS": 8,
+        "NO_WINNER": 3
+      },
+      "averageDays": 3.32,
+      "nightDeaths": 129,
+      "voteDeaths": 137,
+      "potions": 34,
+      "sheriffSurvived": 47,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 75,
+          "wins": 18
+        },
+        "Werewolf": {
+          "seats": 100,
+          "wins": 51
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 17
+        },
+        "Village Idiot": {
+          "seats": 50,
+          "wins": 17
+        },
+        "Defender": {
+          "seats": 50,
+          "wins": 17
+        },
+        "Hunter": {
+          "seats": 25,
+          "wins": 13
+        },
+        "Witch": {
+          "seats": 25,
+          "wins": 11
+        },
+        "Cupid": {
+          "seats": 25,
+          "wins": 10
+        }
+      },
+      "actions": 4973
+    },
+    {
+      "count": 9,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        10900,
+        10949
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 19,
+        "WEREWOLVES": 25,
+        "LOVERS": 2,
+        "NO_WINNER": 4
+      },
+      "averageDays": 3.68,
+      "nightDeaths": 172,
+      "voteDeaths": 157,
+      "potions": 31,
+      "sheriffSurvived": 46,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 217,
+          "wins": 86
+        },
+        "Werewolf": {
+          "seats": 92,
+          "wins": 48
+        },
+        "Seer": {
+          "seats": 48,
+          "wins": 19
+        },
+        "Witch": {
+          "seats": 21,
+          "wins": 6
+        },
+        "Thief": {
+          "seats": 11,
+          "wins": 5
+        },
+        "Cupid": {
+          "seats": 20,
+          "wins": 6
+        },
+        "Little Girl": {
+          "seats": 19,
+          "wins": 7
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 8
+        }
+      },
+      "actions": 5329
+    },
+    {
+      "count": 9,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        10900,
+        10949
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 18,
+        "WEREWOLVES": 29,
+        "LOVERS": 2,
+        "NO_WINNER": 1
+      },
+      "averageDays": 3.9,
+      "nightDeaths": 164,
+      "voteDeaths": 158,
+      "potions": 33,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Village Idiot": {
+          "seats": 50,
+          "wins": 18
+        },
+        "Werewolf": {
+          "seats": 100,
+          "wins": 56
+        },
+        "Defender": {
+          "seats": 50,
+          "wins": 18
+        },
+        "Simple Villager": {
+          "seats": 125,
+          "wins": 47
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 17
+        },
+        "Cupid": {
+          "seats": 25,
+          "wins": 8
+        },
+        "Witch": {
+          "seats": 25,
+          "wins": 7
+        },
+        "Hunter": {
+          "seats": 25,
+          "wins": 10
+        }
+      },
+      "actions": 5884
+    },
+    {
+      "count": 10,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11000,
+        11049
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 36,
+        "VILLAGE": 13,
+        "LOVERS": 1
+      },
+      "averageDays": 4.08,
+      "nightDeaths": 186,
+      "voteDeaths": 188,
+      "potions": 28,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 261,
+          "wins": 64
+        },
+        "Seer": {
+          "seats": 49,
+          "wins": 13
+        },
+        "Werewolf": {
+          "seats": 96,
+          "wins": 67
+        },
+        "Little Girl": {
+          "seats": 19,
+          "wins": 5
+        },
+        "Hunter": {
+          "seats": 23,
+          "wins": 7
+        },
+        "Witch": {
+          "seats": 21,
+          "wins": 6
+        },
+        "Cupid": {
+          "seats": 22,
+          "wins": 7
+        },
+        "Thief": {
+          "seats": 9,
+          "wins": 3
+        }
+      },
+      "actions": 6271
+    },
+    {
+      "count": 10,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11000,
+        11049
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 32,
+        "VILLAGE": 16,
+        "LOVERS": 2
+      },
+      "averageDays": 4.46,
+      "nightDeaths": 180,
+      "voteDeaths": 178,
+      "potions": 26,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 167,
+          "wins": 57
+        },
+        "Village Idiot": {
+          "seats": 45,
+          "wins": 17
+        },
+        "Seer": {
+          "seats": 49,
+          "wins": 16
+        },
+        "Defender": {
+          "seats": 46,
+          "wins": 14
+        },
+        "Werewolf": {
+          "seats": 96,
+          "wins": 60
+        },
+        "Little Girl": {
+          "seats": 19,
+          "wins": 3
+        },
+        "Hunter": {
+          "seats": 23,
+          "wins": 6
+        },
+        "Thief": {
+          "seats": 12,
+          "wins": 6
+        },
+        "Witch": {
+          "seats": 21,
+          "wins": 7
+        },
+        "Cupid": {
+          "seats": 22,
+          "wins": 5
+        }
+      },
+      "actions": 6871
+    },
+    {
+      "count": 11,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11100,
+        11149
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 27,
+        "WEREWOLVES": 20,
+        "LOVERS": 2,
+        "NO_WINNER": 1
+      },
+      "averageDays": 4.32,
+      "nightDeaths": 193,
+      "voteDeaths": 197,
+      "potions": 25,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Seer": {
+          "seats": 50,
+          "wins": 28
+        },
+        "Simple Villager": {
+          "seats": 310,
+          "wins": 165
+        },
+        "Werewolf": {
+          "seats": 92,
+          "wins": 37
+        },
+        "Witch": {
+          "seats": 23,
+          "wins": 14
+        },
+        "Little Girl": {
+          "seats": 21,
+          "wins": 14
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 11
+        },
+        "Cupid": {
+          "seats": 20,
+          "wins": 11
+        },
+        "Thief": {
+          "seats": 12,
+          "wins": 6
+        }
+      },
+      "actions": 6932
+    },
+    {
+      "count": 11,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11100,
+        11149
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 27,
+        "WEREWOLVES": 19,
+        "LOVERS": 3,
+        "NO_WINNER": 1
+      },
+      "averageDays": 4.54,
+      "nightDeaths": 189,
+      "voteDeaths": 195,
+      "potions": 25,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Seer": {
+          "seats": 50,
+          "wins": 28
+        },
+        "Simple Villager": {
+          "seats": 217,
+          "wins": 113
+        },
+        "Werewolf": {
+          "seats": 92,
+          "wins": 37
+        },
+        "Village Idiot": {
+          "seats": 46,
+          "wins": 25
+        },
+        "Defender": {
+          "seats": 44,
+          "wins": 22
+        },
+        "Witch": {
+          "seats": 23,
+          "wins": 15
+        },
+        "Little Girl": {
+          "seats": 21,
+          "wins": 15
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 13
+        },
+        "Cupid": {
+          "seats": 20,
+          "wins": 12
+        },
+        "Thief": {
+          "seats": 15,
+          "wins": 8
+        }
+      },
+      "actions": 7398
+    },
+    {
+      "count": 12,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11200,
+        11249
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 31,
+        "VILLAGE": 16,
+        "LOVERS": 3
+      },
+      "averageDays": 5,
+      "nightDeaths": 234,
+      "voteDeaths": 220,
+      "potions": 28,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Werewolf": {
+          "seats": 139,
+          "wins": 88
+        },
+        "Simple Villager": {
+          "seats": 317,
+          "wins": 96
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 14
+        },
+        "Little Girl": {
+          "seats": 21,
+          "wins": 8
+        },
+        "Witch": {
+          "seats": 22,
+          "wins": 8
+        },
+        "Cupid": {
+          "seats": 20,
+          "wins": 8
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 10
+        },
+        "Thief": {
+          "seats": 10,
+          "wins": 4
+        }
+      },
+      "actions": 8387
+    },
+    {
+      "count": 12,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11200,
+        11249
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 33,
+        "VILLAGE": 15,
+        "LOVERS": 2
+      },
+      "averageDays": 5.4,
+      "nightDeaths": 231,
+      "voteDeaths": 228,
+      "potions": 27,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Werewolf": {
+          "seats": 139,
+          "wins": 89
+        },
+        "Village Idiot": {
+          "seats": 47,
+          "wins": 13
+        },
+        "Simple Villager": {
+          "seats": 221,
+          "wins": 60
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 14
+        },
+        "Defender": {
+          "seats": 48,
+          "wins": 14
+        },
+        "Little Girl": {
+          "seats": 21,
+          "wins": 9
+        },
+        "Witch": {
+          "seats": 22,
+          "wins": 9
+        },
+        "Cupid": {
+          "seats": 20,
+          "wins": 7
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 9
+        },
+        "Thief": {
+          "seats": 11,
+          "wins": 3
+        }
+      },
+      "actions": 9214
+    },
+    {
+      "count": 13,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11300,
+        11349
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 36,
+        "VILLAGE": 12,
+        "LOVERS": 1,
+        "NO_WINNER": 1
+      },
+      "averageDays": 5.32,
+      "nightDeaths": 249,
+      "voteDeaths": 255,
+      "potions": 34,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 364,
+          "wins": 80
+        },
+        "Werewolf": {
+          "seats": 139,
+          "wins": 101
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 12
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 8
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 7
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 8
+        },
+        "Witch": {
+          "seats": 23,
+          "wins": 8
+        },
+        "Thief": {
+          "seats": 7,
+          "wins": 2
+        }
+      },
+      "actions": 9562
+    },
+    {
+      "count": 13,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11300,
+        11349
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 33,
+        "NO_WINNER": 2,
+        "VILLAGE": 14,
+        "LOVERS": 1
+      },
+      "averageDays": 5.74,
+      "nightDeaths": 251,
+      "voteDeaths": 254,
+      "potions": 31,
+      "sheriffSurvived": 47,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 267,
+          "wins": 68
+        },
+        "Village Idiot": {
+          "seats": 49,
+          "wins": 14
+        },
+        "Defender": {
+          "seats": 46,
+          "wins": 13
+        },
+        "Werewolf": {
+          "seats": 139,
+          "wins": 93
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 14
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 9
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 7
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 8
+        },
+        "Witch": {
+          "seats": 23,
+          "wins": 9
+        },
+        "Thief": {
+          "seats": 9,
+          "wins": 3
+        }
+      },
+      "actions": 10209
+    },
+    {
+      "count": 14,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11400,
+        11449
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 26,
+        "VILLAGE": 23,
+        "LOVERS": 1
+      },
+      "averageDays": 5.84,
+      "nightDeaths": 275,
+      "voteDeaths": 271,
+      "potions": 26,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 412,
+          "wins": 188
+        },
+        "Werewolf": {
+          "seats": 142,
+          "wins": 75
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 23
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 12
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 10
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 10
+        },
+        "Thief": {
+          "seats": 9,
+          "wins": 4
+        },
+        "Witch": {
+          "seats": 21,
+          "wins": 10
+        }
+      },
+      "actions": 10554
+    },
+    {
+      "count": 14,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11400,
+        11449
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 26,
+        "VILLAGE": 22,
+        "LOVERS": 1,
+        "NO_WINNER": 1
+      },
+      "averageDays": 6.06,
+      "nightDeaths": 271,
+      "voteDeaths": 265,
+      "potions": 25,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Village Idiot": {
+          "seats": 48,
+          "wins": 21
+        },
+        "Defender": {
+          "seats": 46,
+          "wins": 21
+        },
+        "Simple Villager": {
+          "seats": 315,
+          "wins": 142
+        },
+        "Werewolf": {
+          "seats": 142,
+          "wins": 74
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 22
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 10
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 9
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 7
+        },
+        "Thief": {
+          "seats": 12,
+          "wins": 4
+        },
+        "Witch": {
+          "seats": 21,
+          "wins": 8
+        }
+      },
+      "actions": 11151
+    },
+    {
+      "count": 15,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11500,
+        11549
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 33,
+        "VILLAGE": 15,
+        "LOVERS": 2
+      },
+      "averageDays": 6.2,
+      "nightDeaths": 290,
+      "voteDeaths": 300,
+      "potions": 26,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 465,
+          "wins": 135
+        },
+        "Werewolf": {
+          "seats": 136,
+          "wins": 92
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 15
+        },
+        "Hunter": {
+          "seats": 24,
+          "wins": 9
+        },
+        "Witch": {
+          "seats": 22,
+          "wins": 9
+        },
+        "Little Girl": {
+          "seats": 22,
+          "wins": 7
+        },
+        "Thief": {
+          "seats": 9,
+          "wins": 5
+        },
+        "Cupid": {
+          "seats": 22,
+          "wins": 7
+        }
+      },
+      "actions": 11698
+    },
+    {
+      "count": 15,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11500,
+        11549
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 31,
+        "VILLAGE": 18,
+        "LOVERS": 1
+      },
+      "averageDays": 6.48,
+      "nightDeaths": 286,
+      "voteDeaths": 291,
+      "potions": 26,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 367,
+          "wins": 120
+        },
+        "Werewolf": {
+          "seats": 136,
+          "wins": 87
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 18
+        },
+        "Village Idiot": {
+          "seats": 47,
+          "wins": 15
+        },
+        "Defender": {
+          "seats": 49,
+          "wins": 18
+        },
+        "Hunter": {
+          "seats": 24,
+          "wins": 12
+        },
+        "Witch": {
+          "seats": 22,
+          "wins": 10
+        },
+        "Little Girl": {
+          "seats": 22,
+          "wins": 10
+        },
+        "Thief": {
+          "seats": 11,
+          "wins": 6
+        },
+        "Cupid": {
+          "seats": 22,
+          "wins": 11
+        }
+      },
+      "actions": 12310
+    },
+    {
+      "count": 16,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11600,
+        11649
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 32,
+        "VILLAGE": 18
+      },
+      "averageDays": 6.68,
+      "nightDeaths": 316,
+      "voteDeaths": 315,
+      "potions": 31,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 513,
+          "wins": 158
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 18
+        },
+        "Werewolf": {
+          "seats": 139,
+          "wins": 92
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 15
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 15
+        },
+        "Witch": {
+          "seats": 24,
+          "wins": 15
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 13
+        },
+        "Thief": {
+          "seats": 7,
+          "wins": 5
+        }
+      },
+      "actions": 12832
+    },
+    {
+      "count": 16,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11600,
+        11649
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 35,
+        "VILLAGE": 15
+      },
+      "averageDays": 7.12,
+      "nightDeaths": 310,
+      "voteDeaths": 314,
+      "potions": 28,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 416,
+          "wins": 109
+        },
+        "Village Idiot": {
+          "seats": 46,
+          "wins": 14
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 15
+        },
+        "Werewolf": {
+          "seats": 139,
+          "wins": 99
+        },
+        "Defender": {
+          "seats": 48,
+          "wins": 12
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 11
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 11
+        },
+        "Witch": {
+          "seats": 24,
+          "wins": 11
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 11
+        },
+        "Thief": {
+          "seats": 10,
+          "wins": 4
+        }
+      },
+      "actions": 13771
+    },
+    {
+      "count": 17,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11700,
+        11749
+      ],
+      "completed": 50,
+      "wins": {
+        "WEREWOLVES": 33,
+        "VILLAGE": 14,
+        "LOVERS": 3
+      },
+      "averageDays": 7.1,
+      "nightDeaths": 334,
+      "voteDeaths": 338,
+      "potions": 23,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 560,
+          "wins": 160
+        },
+        "Werewolf": {
+          "seats": 141,
+          "wins": 91
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 14
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 6
+        },
+        "Witch": {
+          "seats": 22,
+          "wins": 6
+        },
+        "Cupid": {
+          "seats": 23,
+          "wins": 7
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 5
+        },
+        "Thief": {
+          "seats": 8,
+          "wins": 2
+        }
+      },
+      "actions": 14080
+    },
+    {
+      "count": 17,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11700,
+        11749
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 19,
+        "WEREWOLVES": 28,
+        "LOVERS": 3
+      },
+      "averageDays": 7.54,
+      "nightDeaths": 330,
+      "voteDeaths": 339,
+      "potions": 24,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Defender": {
+          "seats": 50,
+          "wins": 19
+        },
+        "Simple Villager": {
+          "seats": 461,
+          "wins": 187
+        },
+        "Werewolf": {
+          "seats": 141,
+          "wins": 77
+        },
+        "Village Idiot": {
+          "seats": 49,
+          "wins": 19
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 19
+        },
+        "Little Girl": {
+          "seats": 24,
+          "wins": 6
+        },
+        "Witch": {
+          "seats": 22,
+          "wins": 6
+        },
+        "Cupid": {
+          "seats": 23,
+          "wins": 7
+        },
+        "Hunter": {
+          "seats": 22,
+          "wins": 5
+        },
+        "Thief": {
+          "seats": 8,
+          "wins": 3
+        }
+      },
+      "actions": 15061
+    },
+    {
+      "count": 18,
+      "ruleset": "CLASSIC",
+      "seeds": [
+        11800,
+        11849
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 11,
+        "WEREWOLVES": 39
+      },
+      "averageDays": 7.5,
+      "nightDeaths": 352,
+      "voteDeaths": 362,
+      "potions": 27,
+      "sheriffSurvived": 50,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 564,
+          "wins": 118
+        },
+        "Werewolf": {
+          "seats": 188,
+          "wins": 145
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 11
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 7
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 5
+        },
+        "Little Girl": {
+          "seats": 25,
+          "wins": 7
+        },
+        "Witch": {
+          "seats": 24,
+          "wins": 7
+        },
+        "Thief": {
+          "seats": 7,
+          "wins": 4
+        }
+      },
+      "actions": 15941
+    },
+    {
+      "count": 18,
+      "ruleset": "CLASSIC_PLUS",
+      "seeds": [
+        11800,
+        11849
+      ],
+      "completed": 50,
+      "wins": {
+        "VILLAGE": 9,
+        "WEREWOLVES": 40,
+        "LOVERS": 1
+      },
+      "averageDays": 8.14,
+      "nightDeaths": 359,
+      "voteDeaths": 363,
+      "potions": 26,
+      "sheriffSurvived": 49,
+      "roleWins": {
+        "Simple Villager": {
+          "seats": 466,
+          "wins": 78
+        },
+        "Werewolf": {
+          "seats": 188,
+          "wins": 151
+        },
+        "Defender": {
+          "seats": 46,
+          "wins": 8
+        },
+        "Village Idiot": {
+          "seats": 49,
+          "wins": 9
+        },
+        "Seer": {
+          "seats": 50,
+          "wins": 9
+        },
+        "Hunter": {
+          "seats": 21,
+          "wins": 6
+        },
+        "Cupid": {
+          "seats": 21,
+          "wins": 4
+        },
+        "Little Girl": {
+          "seats": 25,
+          "wins": 6
+        },
+        "Witch": {
+          "seats": 24,
+          "wins": 6
+        },
+        "Thief": {
+          "seats": 10,
+          "wins": 5
+        }
+      },
+      "actions": 17060
+    }
+  ],
+  "unresolvedActions": 0,
+  "metricDefinitions": {
+    "nightDeaths": "Direct wolf and poison victims; secondary Lover/Hunter deaths are recorded in match truth.",
+    "voteDeaths": "Direct executions; pardons are not deaths.",
+    "roleWins": "Current character at match end, including transformations.",
+    "sheriffSurvived": "A living Sheriff holds office at completion, including successors."
+  }
+}
