@@ -15,4 +15,4 @@ npm run test:e2e -- --development tests/e2e/saigon-scenarios.spec.ts
 npm run simulate -- --game saigon-grid --games 1000
 ```
 
-The rule tests cover buying, auction resolution, bids and revisions, trades, Districts, Developments, Landmarks, Hubs, Companies, Review, both event decks, debt, Insolvency, and projection. Browser checks cover two-tab auctions, reconnect, spectators, bots, mobile decisions, and the result dialog. The 1,000-game seeded bot batch reported in [Saigon Grid rules](saigon-grid.md) completed without deadlocks or invariant failures. Rooms currently live in one server process, so a restart ends an active game.
+The rule tests cover buying, auction resolution, bids and revisions, trades, Districts, Developments, Landmarks, Hubs, Companies, Review, both event decks, debt, Insolvency, and projection. Browser checks cover two-tab auctions, reconnect, spectators, bots, mobile decisions, and the result dialog. The 1,000-game seeded bot batch reported in [Saigon Grid rules](saigon-grid.md) completed without deadlocks or invariant failures. Rooms restore from durable snapshots after restart; see [table storage](table-storage.md).

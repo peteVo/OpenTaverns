@@ -24,6 +24,8 @@ Room views include `matchId` and `deadlineAt`. Tidecall gameplay messages must i
 
 ## WebSocket
 
+Durable room snapshots retain session credentials and accepted action IDs across restart. Restored human seats become Away and timed games wait for a seated reconnect. Server-host table deletion sends `TABLE_DELETED {code}` before closing the socket; clients stop retrying and show a closed-table view. Protected management routes are documented in [table storage](table-storage.md).
+
 Connect to `/ws?table=CODE` using the same origin and browser cookie. The server rejects unknown rooms, missing sessions, and cross-origin upgrades. Messages are JSON and limited to 16 KiB.
 
 Client to server:

@@ -13,4 +13,6 @@
 
 ## Known platform limits
 
+Update, 2026-10-13: [durable table storage and host management](table-storage.md) now replace the process-restart limitation described below. The paragraph records the original release checkpoint.
+
 Tables remain process-memory state: restarting the server loses active tables. Bots use public information and their own hands with modest heuristics; they are suitable for filling seats and QA, not a substitute for human strategy. No new persistence or sound subsystem was introduced.

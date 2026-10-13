@@ -14,7 +14,7 @@ Saigon Grid uses a serializable seeded random state for dice and shuffled event 
 
 Blackout also has a serializable `gameVersion: 1` state and deterministic incident/role shuffles. Its action log reconstructs a complete match. The explicit phase machine accepts independent responses and votes from several seats without a single active player. Locks and votes remain server-side while pending, and a timeout supplies a safe Stabilize or Save default. Its full history is released in a post-game truth timeline. The room server owns per-phase deadlines, disconnect grace, and bot takeover; Blackout owns the rules for what those events do.
 
-The present room registry is in memory. A durable store can write the serialized room/game after each accepted action, using a transaction or per-room lock. Keep the room server single-instance until a shared store and cross-instance coordination exist.
+The live room registry is backed by atomic versioned JSON snapshots after accepted actions and room changes, before broadcasts. Saved credentials, game state and retry IDs restore the same table after process restart. Human presence is reset and timed matches pause until a seated player reconnects. A data-directory lock enforces one writer. Keep the server single-instance until shared storage and cross-instance coordination exist. See [table storage and host management](table-storage.md).
 
 ## State delivery
 

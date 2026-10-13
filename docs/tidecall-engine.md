@@ -84,4 +84,4 @@ Zero is viable but unconditional zero is weak. Most misses are one trick. Bots f
 
 Development scenarios cover dealing, Tide/Forecast/Compass reveals and locks, normal/partial/follow-suit/void tricks, Undertow, dominance, Crosscurrent switch, Shifting, final trick/round, seven-card hand, six-card table, scoring, result and reconnect. They are rejected in production. Browser tests cover mixed private sessions, full ten-round match, retry/stale/old-match rejection, spectator privacy, reconnect, host rematch, safe timers, latest-tab control, Away takeover, Rules, keyboard, portrait/landscape and reduced motion.
 
-Tables still live in process memory, as in the existing platform. Server restart loses a table; durable restart recovery is a platform follow-up. No new runtime dependency, voice system, 3D renderer or separate Rules UI was added.
+Tables now use the platform's durable snapshots and restart recovery; see [table storage](table-storage.md). No new runtime dependency, voice system, 3D renderer or separate Rules UI was added.

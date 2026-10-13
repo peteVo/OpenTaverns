@@ -32,4 +32,4 @@ Screenshots selected for the README and this audit live in `docs/images/qa/tidec
 
 Philosophy 5 / Hierarchy 4 / Execution 4 / Specificity 5 / Restraint 4 / Variety 5. The current Tide is explicit, the table is central, and the hand has physical card grammar. There are no enterprise metrics, hacker frames, neon, casino trim, fake browser chrome, large illustration dependencies or dashboard card grids. Colors/fonts are named scoped tokens; public numbers are actual game state. The three motion primitives are arrival/reveal, card selection lift and winner collection. The two substantial refinement passes addressed information placement and crowded resolution, rather than only decoration.
 
-No persistence, offline mode or sound was added; those remain platform capabilities outside this module.
+This game module added no persistence, offline mode or sound subsystem. The platform subsequently added [durable table storage](table-storage.md).

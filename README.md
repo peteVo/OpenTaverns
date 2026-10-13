@@ -40,6 +40,16 @@ npm start -w @opentaverns/server
 
 Open `http://localhost:3000`. The server serves the built client and WebSockets from one origin.
 
+## Saved tables and host management
+
+All four games save tables automatically to `data/` after every accepted action and room change, before sending the new state. Restart with the same data directory and players can reopen their original links using the same browser cookies. Private hands, roles, locked choices, scores, bots and retry IDs are retained. Human seats begin Away; timed matches pause until the first seated player reconnects, with at least 30 seconds to resume.
+
+The server prints a **private Host management link** at startup. Open it to list all saved tables, reopen invitations and permanently delete tables. The collection footer also links to **Host register** at `/manage`; it requires the key from the private link. A deletion confirmation identifies the table and connected players. Deleting closes connected clients and removes the saved snapshot.
+
+Keep `data/` between upgrades and back it up while the server is stopped. It contains private game state and seat credentials; never publish it. `OPENTAVERNS_DATA_DIR` selects another directory. `OPENTAVERNS_ADMIN_KEY` may supply a private key of 32–200 characters; otherwise a random key is generated once in `data/admin-key`. The key grants management access to every table. A lock prevents two server processes using the same directory.
+
+When developing through port 5173, use `/manage` there with the same key, or use the printed port-3000 link after building the client. For deployment, place the data directory on a persistent disk/volume and set `OPENTAVERNS_DATA_DIR` to its mount path. An ephemeral filesystem cannot preserve tables when the host replaces the container.
+
 ## Play over local Wi-Fi
 
 Run `npm run dev` on the host computer. Open `http://HOST_IP:5173` from devices on the same Wi-Fi. If the host creates from `localhost`, the invitation replaces that hostname with a private LAN address when one is available. Allow ports 5173 and 3000 through the host firewall if needed. Keep the host computer awake during the match.
@@ -106,7 +116,7 @@ Only your own hand and pending choices reach your device. Spectators see played 
 - `apps/web`: collection, shared table and Rules flows, and separate React renderers for all four games. The client proposes actions; it never decides their validity. Game renderers load on demand.
 - `tests/e2e`: multi-browser create/join, a complete six-seat match through victory, refresh and disconnect recovery, host transfer, trade races, security checks, and desktop/mobile screenshots.
 
-The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All four rule states serialize as JSON, which permits a future durable store without changing the rules packages.
+The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All four rule states serialize as JSON and are stored in atomic room snapshots without changing the rules packages.
 
 See [architecture](docs/architecture.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
 
@@ -118,10 +128,10 @@ The included web manifest and icon support standalone installation where the bro
 
 ## Deploy
 
-The repository includes `render.yaml` for a single [Render web service](https://render.com/docs/web-services). Connect the repository in Render and deploy the Blueprint, or create one Node web service manually with build command `npm ci && npm run build`, start command `npm start -w @opentaverns/server`, and health path `/health`. Render supports [public WebSocket connections](https://render.com/docs/websocket), so the same HTTPS origin serves the app, API, and `wss` connection. The server binds `0.0.0.0` and reads Render's `PORT` automatically. Choose an always-on single instance for matches; a process restart currently loses in-memory tables.
+The repository includes `render.yaml` for a single [Render web service](https://render.com/docs/web-services). Connect the repository in Render and deploy the Blueprint, or create one Node web service manually with build command `npm ci && npm run build`, start command `npm start -w @opentaverns/server`, and health path `/health`. Render supports [public WebSocket connections](https://render.com/docs/websocket), so the same HTTPS origin serves the app, API, and `wss` connection. The server binds `0.0.0.0` and reads Render's `PORT` automatically. Choose an always-on single instance and a persistent disk/volume for saved tables. Set OPENTAVERNS_DATA_DIR to its mount path; see the saved-table instructions above.
 
 Do not scale this version to multiple instances: rooms are process-local, and a WebSocket reconnect may reach a different instance. Add shared room persistence and distributed action serialization before doing that. Secure `HttpOnly`, `SameSite=Lax` cookies are issued on HTTPS; the server checks request origins. No CORS configuration is required for the single-origin deployment.
 
 ## Current limits and next steps
 
-Tables live in server memory, so a server restart or replacement ends ongoing games. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. The immediate next engineering step for durable public play is shared persistence plus restart recovery. The four rules packages remain separate from room/session code.
+Tables survive process restarts using their saved data directory. Deployment replacements require a persistent disk/volume. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. Multi-instance public hosting still requires shared storage and coordinated actions. The four rules packages remain separate from room/session code.

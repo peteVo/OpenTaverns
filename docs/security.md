@@ -1,5 +1,7 @@
 # Security model
 
+Saved room snapshots contain private state and credentials and stay outside web assets in a gitignored data directory. The server operator's `/manage` register uses a separate random key and HttpOnly, SameSite=Strict admin cookie; ordinary seat credentials cannot list or delete tables. Management summaries omit private state. Origin checks cover deletion, and a deleted room cannot be recreated by bot loops or socket-close callbacks. See [table storage](table-storage.md) for disk protection, key rotation and restart recovery.
+
 The server owns rooms, identity mapping, seeds, random state, decks, phases, assets, inventories, trades, obligations, and victory. Browser state is display data. Each game has its own authoritative `applyAction` function that clones state and checks its rules and invariants before the room changes. Invalid actions cannot partly mutate a room. Hearthlands keeps a private action history; Saigon Grid keeps a public financial ledger and event history.
 
 The browser cookie is a random opaque 256-bit credential. It is `HttpOnly`, `SameSite=Lax`, scoped to `/`, and `Secure` on HTTPS. A nickname or room code alone cannot reclaim a seat. HTTP writes and WebSocket upgrades check same-origin requests. No API accepts user-supplied player IDs for authentication. A spectator can send a WebSocket message but the server rejects gameplay actions.
