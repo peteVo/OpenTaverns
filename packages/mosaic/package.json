@@ -1,0 +1,7 @@
+{
+  "name": "@opentaverns/mosaic",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": { ".": "./src/index.ts", "./client": "./src/client.ts", "./rules": "./src/rules.ts", "./simulate": "./src/simulate.ts", "./scenarios": "./src/scenarios.ts" },
+  "scripts": { "build": "tsc --noEmit -p ../../tsconfig.json" }
+}

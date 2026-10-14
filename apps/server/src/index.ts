@@ -18,13 +18,17 @@ import { nextBotAction as nextBlackoutBotAction } from '@opentaverns/blackout/si
 import { createScenario as createBlackoutScenario, scenarioNames as blackoutScenarioNames } from '@opentaverns/blackout/scenarios';
 import * as tidecall from '@opentaverns/tidecall';
 import * as werewolf from '@opentaverns/werewolf';
+import * as mosaic from '@opentaverns/mosaic';
+import { nextBotAction as nextMosaicBotAction } from '@opentaverns/mosaic/simulate';
+import { createScenario as createMosaicScenario, scenarioNames as mosaicScenarioNames } from '@opentaverns/mosaic/scenarios';
 import { nextBotAction as nextWerewolfBotAction } from '@opentaverns/werewolf/simulate';
 import { createScenario as createWerewolfScenario, scenarioNames as werewolfScenarioNames } from '@opentaverns/werewolf/scenarios';
 import { nextBotAction as nextTidecallBotAction } from '@opentaverns/tidecall/simulate';
 import { createScenario as createTidecallScenario, scenarioNames as tidecallScenarioNames } from '@opentaverns/tidecall/scenarios';
 
 type Seat = { id: string; name: string; token?: string; connected: boolean; bot: boolean };
-type Room = { matchId: string; code: string; inviteUrl: string; gameId: 'hearthlands' | 'saigon-grid' | 'blackout' | 'tidecall' | 'werewolf'; host: string; seats: Seat[]; spectators: Map<string, string>; game: Game | grid.Game | blackout.Game | tidecall.Game | werewolf.Game | null; sockets: Map<string, Set<WebSocket>>; controllers: Map<string, WebSocket>; seenActions: Set<string>; created: number; seed: number; debugSeed: boolean; botTurn: string; botActionsThisTurn: number; botsRunning: boolean; deadlineAt: number | null; graceUsed: boolean; pacing: blackout.Pacing; werewolfSettings?: werewolf.Settings; paused: boolean; resumeMs: number | null };
+type Room = { matchId: string; code: string; inviteUrl: string; gameId: 'hearthlands' | 'saigon-grid' | 'blackout' | 'tidecall' | 'werewolf' | 'mosaic'; host: string; seats: Seat[]; spectators: Map<string, string>; game: Game | grid.Game | blackout.Game | tidecall.Game | werewolf.Game | mosaic.Game | null; sockets: Map<string, Set<WebSocket>>; controllers: Map<string, WebSocket>; seenActions: Set<string>; created: number; seed: number; debugSeed: boolean; botTurn: string; botActionsThisTurn: number; botsRunning: boolean; deadlineAt: number | null; graceUsed: boolean; pacing: blackout.Pacing; werewolfSettings?: werewolf.Settings; paused: boolean; resumeMs: number | null };
+const gameLimits:Record<Room['gameId'],readonly [number,number]>={hearthlands:[3,6],'saigon-grid':[2,6],blackout:[5,10],tidecall:[3,6],werewolf:[8,18],mosaic:[2,4]};
 type SavedRoom = Omit<Room, 'sockets' | 'controllers' | 'botsRunning' | 'spectators' | 'seenActions' | 'paused' | 'resumeMs'> & { spectators: [string, string][]; seenActions: string[]; savedAt: number };
 const rooms = new Map<string, Room>();
 const development = process.argv.includes('--development');
@@ -32,9 +36,10 @@ const port = Number(process.argv.find(arg => arg.startsWith('--port='))?.slice(7
 const store = new TableStore<SavedRoom>(resolve(process.env.OPENTAVERNS_DATA_DIR || fileURLToPath(new URL('../../../data', import.meta.url))), process.env.OPENTAVERNS_ADMIN_KEY);
 process.once('exit', () => store.close());
 for (const saved of store.load()) {
-  if (!['hearthlands','saigon-grid','blackout','tidecall','werewolf'].includes(saved.gameId) || !saved.seats.some(s => s.id === saved.host) || !Number.isFinite(saved.savedAt)) throw Error(`Invalid saved table ${saved.code}.`);
+  if (!['hearthlands','saigon-grid','blackout','tidecall','werewolf','mosaic'].includes(saved.gameId) || !saved.seats.some(s => s.id === saved.host) || !Number.isFinite(saved.savedAt)) throw Error(`Invalid saved table ${saved.code}.`);
   if (saved.game) {
-    if (saved.gameId === 'werewolf') werewolf.validateGame(saved.game as werewolf.Game);
+    if (saved.gameId === 'mosaic') mosaic.validateGame(saved.game as mosaic.Game);
+    else if (saved.gameId === 'werewolf') werewolf.validateGame(saved.game as werewolf.Game);
     else if (saved.gameId === 'tidecall') tidecall.validateGame(saved.game as tidecall.Game);
     else if (saved.gameId === 'blackout') blackout.validateGame(saved.game as blackout.Game);
     else if (saved.gameId === 'saigon-grid') grid.validateGame(saved.game as grid.Game);
@@ -99,6 +104,8 @@ const tidecallActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('PLAY_CARD'), round: numberSchema, trick: numberSchema, card: z.string().regex(/^(WAVE|WIND|REEF|SUN)-(1[0-3]|[1-9])$/) }).strict(),
   z.object({ type: z.literal('ADVANCE'), round: numberSchema, phase: z.enum(['DEALING','TIDE_REVEAL','FORECAST_REVEAL','COMPASS_REVEAL','TRICK_RESOLUTION','ROUND_SCORING']) }).strict(),
 ]);
+const mosaicPlacementSchema=z.object({tile:z.string().max(40),row:z.number().int().min(0).max(4),col:z.number().int().min(0).max(4)}).strict();
+const mosaicActionSchema=z.object({type:z.literal('DRAFT_AND_PLACE'),round:z.number().int().min(1).max(10),turn:z.number().int().min(1).max(40),revision:numberSchema,offer:z.string().max(40),placements:z.tuple([mosaicPlacementSchema,mosaicPlacementSchema])}).strict();
 const werewolfSettingsSchema=z.object({ruleset:z.enum(['CLASSIC','CLASSIC_PLUS','CUSTOM']),preset:z.enum(['BASIC','POWERS']),roles:z.array(z.enum(werewolf.roles)).max(18).optional(),sheriff:z.boolean(),pacing:z.enum(['RELAXED','STANDARD','FAST']),nightSeconds:z.number().int().min(10).max(600),discussionSeconds:z.number().int().min(0).max(3600),revealDeaths:z.boolean()}).strict();
 const werewolfActionSchema=z.discriminatedUnion('type',[
   z.object({type:z.literal('CONFIRM_ROLE'),window:numberSchema}).strict(),
@@ -148,15 +155,15 @@ function inviteUrl(req: IncomingMessage, codeValue: string) {
   url.hash = '';
   return url.toString();
 }
-function roomView(room: Room, sessionToken: string): { matchId: string; code: string; inviteUrl: string; gameId: string; host: string; self: string | null; spectator: boolean; seats: { id: string; name: string; connected: boolean; bot: boolean }[]; game: View | grid.View | blackout.View | tidecall.View | werewolf.View | null; deadlineAt: number | null; werewolfSettings?: werewolf.Settings } {
+function roomView(room: Room, sessionToken: string): { matchId: string; code: string; inviteUrl: string; gameId: string; host: string; self: string | null; spectator: boolean; seats: { id: string; name: string; connected: boolean; bot: boolean }[]; game: View | grid.View | blackout.View | tidecall.View | werewolf.View | mosaic.View | null; deadlineAt: number | null; werewolfSettings?: werewolf.Settings } {
   if (rooms.get(room.code) !== room) throw Error('The host deleted this table.');
   const seat = viewer(room, sessionToken);
   const eliminated = room.gameId === 'saigon-grid' && (room.game as grid.Game | null)?.players.find(p => p.id === seat?.id)?.eliminated;
-  return { werewolfSettings:room.werewolfSettings, matchId: room.matchId, code: room.code, inviteUrl: room.inviteUrl, gameId: room.gameId, host: room.host, self: eliminated ? null : seat?.id ?? null, spectator: !seat || !!eliminated, seats: room.seats.map(({ id, name, connected, bot }) => ({ id, name, connected, bot })), game: room.game ? room.gameId === 'werewolf' ? werewolf.project(room.game as werewolf.Game, seat?.id ?? null) : room.gameId === 'tidecall' ? tidecall.project(room.game as tidecall.Game, seat?.id ?? null) : room.gameId === 'saigon-grid' ? grid.project(room.game as grid.Game) : room.gameId === 'blackout' ? blackout.project(room.game as blackout.Game, seat?.id ?? null) : project(room.game as Game, seat?.id) : null, deadlineAt: room.deadlineAt };
+  return { werewolfSettings:room.werewolfSettings, matchId: room.matchId, code: room.code, inviteUrl: room.inviteUrl, gameId: room.gameId, host: room.host, self: eliminated ? null : seat?.id ?? null, spectator: !seat || !!eliminated, seats: room.seats.map(({ id, name, connected, bot }) => ({ id, name, connected, bot })), game: room.game ? room.gameId === 'mosaic' ? mosaic.project(room.game as mosaic.Game) : room.gameId === 'werewolf' ? werewolf.project(room.game as werewolf.Game, seat?.id ?? null) : room.gameId === 'tidecall' ? tidecall.project(room.game as tidecall.Game, seat?.id ?? null) : room.gameId === 'saigon-grid' ? grid.project(room.game as grid.Game) : room.gameId === 'blackout' ? blackout.project(room.game as blackout.Game, seat?.id ?? null) : project(room.game as Game, seat?.id) : null, deadlineAt: room.deadlineAt };
 }
 const phaseSeconds: Record<blackout.Pacing, number[]> = { RELAXED: [240,240,480,240,180,180,120,180], STANDARD: [120,120,240,120,90,90,60,90], FAST: [60,60,90,60,45,45,35,45] };
 const timedPhases: blackout.Phase[] = ['ROLE_REVEAL','INCIDENT_REVEAL','BRIEFING','ASSIGNMENT','SECRET_ACTION','RESOLUTION','AUDIT_VOTE','ROUND_END'];
-function setDeadline(room: Room) { if (!room.game) return; if (room.gameId === 'werewolf') { const g=room.game as werewolf.Game; const seconds=g.phase==='GAME_OVER'?null:g.phase==='NIGHT'?g.settings.nightSeconds:g.phase==='DAY_DISCUSSION'?(g.settings.discussionSeconds||null):['DAWN','VOTE_RESULT'].includes(g.phase)?8:room.pacing==='FAST'?30:room.pacing==='STANDARD'?90:180; room.deadlineAt=seconds===null?null:Date.now()+seconds*1000;room.graceUsed=false;return; } if (room.gameId === 'tidecall') { const phase = room.game.phase; const decisions = room.pacing === 'RELAXED' ? [180,120,90] : room.pacing === 'STANDARD' ? [90,60,45] : [45,30,20]; const seconds = phase === 'MATCH_OVER' ? null : phase === 'FORECAST_REQUIRED' ? decisions[0]! : phase === 'COMPASS_REQUIRED' ? decisions[1]! : phase === 'TRICK_PLAY' ? decisions[2]! : phase === 'ROUND_SCORING' ? 25 : 2; room.deadlineAt = seconds === null ? null : Date.now()+seconds*1000; room.graceUsed = false; return; } if (room.gameId !== 'blackout') return; const index = timedPhases.indexOf(room.game.phase as blackout.Phase); room.deadlineAt = index < 0 ? null : Date.now() + phaseSeconds[room.pacing][index]! * 1000; room.graceUsed = false; }
+function setDeadline(room: Room) { if (!room.game) return; if (room.gameId === 'mosaic') { room.deadlineAt=room.game.phase==='GAME_OVER'?null:Date.now()+({RELAXED:300,STANDARD:180,FAST:60}[room.pacing])*1000;room.graceUsed=false;return; } if (room.gameId === 'werewolf') { const g=room.game as werewolf.Game; const seconds=g.phase==='GAME_OVER'?null:g.phase==='NIGHT'?g.settings.nightSeconds:g.phase==='DAY_DISCUSSION'?(g.settings.discussionSeconds||null):['DAWN','VOTE_RESULT'].includes(g.phase)?8:room.pacing==='FAST'?30:room.pacing==='STANDARD'?90:180; room.deadlineAt=seconds===null?null:Date.now()+seconds*1000;room.graceUsed=false;return; } if (room.gameId === 'tidecall') { const phase = room.game.phase; const decisions = room.pacing === 'RELAXED' ? [180,120,90] : room.pacing === 'STANDARD' ? [90,60,45] : [45,30,20]; const seconds = phase === 'MATCH_OVER' ? null : phase === 'FORECAST_REQUIRED' ? decisions[0]! : phase === 'COMPASS_REQUIRED' ? decisions[1]! : phase === 'TRICK_PLAY' ? decisions[2]! : phase === 'ROUND_SCORING' ? 25 : 2; room.deadlineAt = seconds === null ? null : Date.now()+seconds*1000; room.graceUsed = false; return; } if (room.gameId !== 'blackout') return; const index = timedPhases.indexOf(room.game.phase as blackout.Phase); room.deadlineAt = index < 0 ? null : Date.now() + phaseSeconds[room.pacing][index]! * 1000; room.graceUsed = false; }
 function broadcast(room: Room) {
   if (rooms.get(room.code) !== room) return;
   persist(room);
@@ -170,7 +177,7 @@ function reconnect(room: Room, sessionToken: string, connected: boolean) {
   const seat = viewer(room, sessionToken); if (!seat) return;
   if (connected && room.paused) { room.paused = false; if (room.resumeMs) room.deadlineAt = Date.now() + room.resumeMs; room.resumeMs = null; }
   seat.connected = connected;
-  if (!connected && (room.gameId === 'blackout' || room.gameId === 'tidecall' || room.gameId === 'werewolf') && room.deadlineAt && !room.graceUsed) { room.deadlineAt += 30000; room.graceUsed = true; }
+  if (!connected && (room.gameId === 'blackout' || room.gameId === 'tidecall' || room.gameId === 'werewolf' || room.gameId === 'mosaic') && room.deadlineAt && !room.graceUsed) { room.deadlineAt += 30000; room.graceUsed = true; }
   if (room.game) { const p = room.game.players.find(p => p.id === seat.id); if (p) p.connected = connected; }
   if (connected && !room.seats.find(s => s.id === room.host)?.connected) room.host = seat.id;
   if (!connected && room.host === seat.id) { const next = room.seats.find(s => !s.bot && s.connected && s.id !== seat.id); if (next) room.host = next.id; }
@@ -184,6 +191,9 @@ async function runBotTurns(room: Room) {
   try {
     while (rooms.get(room.code) === room && !room.paused && room.game && room.game.phase !== 'GAME_OVER' && actions < 100) {
       actions++;
+      if (room.gameId === 'mosaic') {
+        const g=room.game as mosaic.Game;const seat=room.seats.find(s=>s.id===g.active);if(!seat?.bot)return;const action=nextMosaicBotAction(mosaic.project(g),seat.id);if(!action)return;actor=seat.id;room.game=mosaic.applyAction(g,actor,action);setDeadline(room);broadcast(room);await new Promise(resolve=>setTimeout(resolve,140));continue;
+      }
       if (room.gameId === 'werewolf') {
         const g=room.game as werewolf.Game;const choice=room.seats.filter(s=>s.bot).map(s=>({actor:s.id,action:nextWerewolfBotAction(werewolf.project(g,s.id),s.id)})).find(c=>c.action);if(!choice?.action)return;actor=choice.actor;room.game=werewolf.applyAction(g,actor,choice.action);if((room.game as werewolf.Game).window!==g.window)setDeadline(room);broadcast(room);await new Promise(resolve=>setTimeout(resolve,30));continue;
       }
@@ -264,19 +274,19 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
     }
     const sessionToken = session(req, res);
     if (req.method === 'POST' && url.pathname === '/api/tables') {
-      const input = z.object({ name: z.string(), gameId: z.enum(['hearthlands', 'saigon-grid', 'blackout', 'tidecall', 'werewolf']), seed: z.number().int().min(0).max(0xffffffff).optional(), scenario: z.string().optional(), pacing: z.enum(['RELAXED','STANDARD','FAST']).optional(), werewolfSettings: werewolfSettingsSchema.optional() }).parse(await body(req));
+      const input = z.object({ name: z.string(), gameId: z.enum(['hearthlands', 'saigon-grid', 'blackout', 'tidecall', 'werewolf', 'mosaic']), seed: z.number().int().min(0).max(0xffffffff).optional(), scenario: z.string().optional(), pacing: z.enum(['RELAXED','STANDARD','FAST']).optional(), werewolfSettings: werewolfSettingsSchema.optional() }).parse(await body(req));
       const name = safeName(input.name); if (!name) throw Error('Enter a display name.');
       if (input.seed !== undefined && !development) throw Error('A custom seed is available only in development.');
-      if (input.scenario && (!development || input.gameId === 'hearthlands' || input.gameId === 'werewolf' && !werewolfScenarioNames.includes(input.scenario as typeof werewolfScenarioNames[number]) || input.gameId === 'saigon-grid' && !scenarioNames.includes(input.scenario as typeof scenarioNames[number]) || input.gameId === 'blackout' && !blackoutScenarioNames.includes(input.scenario as typeof blackoutScenarioNames[number]) || input.gameId === 'tidecall' && !tidecallScenarioNames.includes(input.scenario as typeof tidecallScenarioNames[number]))) throw Error('That scenario is available only for its game in development.');
+      if (input.scenario && (!development || input.gameId === 'hearthlands' || input.gameId === 'mosaic' && !mosaicScenarioNames.includes(input.scenario as typeof mosaicScenarioNames[number]) || input.gameId === 'werewolf' && !werewolfScenarioNames.includes(input.scenario as typeof werewolfScenarioNames[number]) || input.gameId === 'saigon-grid' && !scenarioNames.includes(input.scenario as typeof scenarioNames[number]) || input.gameId === 'blackout' && !blackoutScenarioNames.includes(input.scenario as typeof blackoutScenarioNames[number]) || input.gameId === 'tidecall' && !tidecallScenarioNames.includes(input.scenario as typeof tidecallScenarioNames[number]))) throw Error('That scenario is available only for its game in development.');
       let roomCode = code(); while (rooms.has(roomCode)) roomCode = code();
       const seat = { id: id(), name, token: sessionToken, connected: false, bot: false };
       const room: Room = { matchId: id(), code: roomCode, inviteUrl: inviteUrl(req, roomCode), gameId: input.gameId, host: seat.id, seats: [seat], spectators: new Map(), game: null, sockets: new Map(), controllers: new Map(), seenActions: new Set(), created: Date.now(), seed: input.seed ?? randomInt(0, 0x100000000), debugSeed: input.seed !== undefined, botTurn: '', botActionsThisTurn: 0, botsRunning: false, deadlineAt: null, graceUsed: false, pacing: input.pacing ?? 'RELAXED', werewolfSettings: input.gameId==='werewolf' ? {...werewolf.defaultSettings,nightSeconds:input.pacing==='FAST'?15:input.pacing==='STANDARD'?30:60,...input.werewolfSettings,pacing:input.pacing??input.werewolfSettings?.pacing??'RELAXED'} : undefined, paused: false, resumeMs: null };
       if (input.scenario) {
-        const botCount = input.gameId === 'werewolf' ? input.scenario==='EIGHTEEN_PLAYERS'?17:7 : input.gameId === 'blackout' ? 4 : input.gameId === 'tidecall' ? input.scenario === 'SIX_PLAYER_TRICK' ? 5 : 3 : 1;
-        for (let index = 0; index < botCount; index++) room.seats.push({ id: id(), name: input.gameId==='werewolf'?['Aya','Theo','Jun','Rae','Ivo','Len','Nia','Bo','Eli','Noa','Sora','Mina','Kai','Sol','Tao','Em','Zia'][index]! : input.gameId === 'tidecall' ? `Navigator ${index+1}` : input.gameId === 'blackout' ? `Relief ${index + 1}` : 'Courier 1', connected: true, bot: true });
-        room.game = input.gameId === 'werewolf' ? createWerewolfScenario(input.scenario as typeof werewolfScenarioNames[number],room.seats.map(({id,name})=>({id,name})),room.seed) : input.gameId === 'tidecall' ? createTidecallScenario(input.scenario as typeof tidecallScenarioNames[number], room.seats.map(({id,name}) => ({id,name})), room.seed) : input.gameId === 'blackout' ? createBlackoutScenario(input.scenario as typeof blackoutScenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createScenario(input.scenario as typeof scenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed);
+        const botCount = input.gameId === 'mosaic' ? 3 : input.gameId === 'werewolf' ? input.scenario==='EIGHTEEN_PLAYERS'?17:7 : input.gameId === 'blackout' ? 4 : input.gameId === 'tidecall' ? input.scenario === 'SIX_PLAYER_TRICK' ? 5 : 3 : 1;
+        for (let index = 0; index < botCount; index++) room.seats.push({ id: id(), name: input.gameId==='mosaic'?['Aya','Linh','Theo'][index]! : input.gameId==='werewolf'?['Aya','Theo','Jun','Rae','Ivo','Len','Nia','Bo','Eli','Noa','Sora','Mina','Kai','Sol','Tao','Em','Zia'][index]! : input.gameId === 'tidecall' ? `Navigator ${index+1}` : input.gameId === 'blackout' ? `Relief ${index + 1}` : 'Courier 1', connected: true, bot: true });
+        room.game = input.gameId === 'mosaic' ? createMosaicScenario(input.scenario as typeof mosaicScenarioNames[number],room.seats.map(({id,name})=>({id,name}))) : input.gameId === 'werewolf' ? createWerewolfScenario(input.scenario as typeof werewolfScenarioNames[number],room.seats.map(({id,name})=>({id,name})),room.seed) : input.gameId === 'tidecall' ? createTidecallScenario(input.scenario as typeof tidecallScenarioNames[number], room.seats.map(({id,name}) => ({id,name})), room.seed) : input.gameId === 'blackout' ? createBlackoutScenario(input.scenario as typeof blackoutScenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createScenario(input.scenario as typeof scenarioNames[number], room.seats.map(({ id, name }) => ({ id, name })), room.seed);
         room.game.players[0]!.connected = false; setDeadline(room);
-        if (input.gameId === 'tidecall' || input.gameId==='werewolf') room.deadlineAt = null; // Development snapshots stay still until an action.
+        if (input.gameId === 'tidecall' || input.gameId==='werewolf' || input.gameId==='mosaic') room.deadlineAt = null; // Development snapshots stay still until an action.
       }
       rooms.set(roomCode, room); persist(room); send(res, 201, roomView(room, sessionToken)); return;
     }
@@ -289,7 +299,7 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
       const input = z.object({ name: z.string(), spectator: z.boolean().optional() }).parse(await body(req));
       const name = safeName(input.name); if (!name) throw Error('Enter a display name.');
       let seat = viewer(room, sessionToken);
-      if (!seat && !room.game && !input.spectator && room.seats.length < (room.gameId==='werewolf'?18:room.gameId === 'blackout' ? 10 : 6)) { seat = { id: id(), name, token: sessionToken, connected: false, bot: false }; room.seats.push(seat); }
+      if (!seat && !room.game && !input.spectator && room.seats.length < gameLimits[room.gameId][1]) { seat = { id: id(), name, token: sessionToken, connected: false, bot: false }; room.seats.push(seat); }
       else if (!seat) room.spectators.set(sessionToken, name);
       if (seat && room.sockets.get(sessionToken)?.size) reconnect(room, sessionToken, true);
       broadcast(room); send(res, 200, roomView(room, sessionToken)); return;
@@ -297,37 +307,37 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
     if (req.method === 'POST' && match[2] === 'bots') {
       const seat = viewer(room, sessionToken); if (!seat || room.host !== seat.id) throw Error('Only the host can manage bot players.');
       const input = z.object({ replaceSeatId: z.string().optional() }).strict().parse(await body(req));
-      if (room.game && (!input.replaceSeatId || room.gameId === 'hearthlands')) throw Error('Only an Away Saigon Grid, Blackout, Tidecall or Werewolf player may become a bot during a match.');
+      if (room.game && (!input.replaceSeatId || room.gameId === 'hearthlands')) throw Error('Only an Away Saigon Grid, Blackout, Tidecall, Werewolf or Mosaic player may become a bot during a match.');
       if (input.replaceSeatId) {
         const index = room.seats.findIndex(s => s.id === input.replaceSeatId);
         const away = room.seats[index];
         if (!away || away.bot || away.connected || away.id === room.host) throw Error('Choose an Away player to replace.');
         if (away.token) { room.sockets.delete(away.token); room.controllers.delete(away.token); }
-        room.seats[index] = { id: room.game ? away.id : id(), name: room.game ? away.name : room.gameId==='werewolf'?`Villager ${room.seats.filter(s=>s.bot).length+1}`:room.gameId === 'blackout' ? `Relief ${room.seats.filter(s => s.bot).length + 1}` : room.gameId === 'saigon-grid' ? `Courier ${room.seats.filter(s => s.bot).length + 1}` : `Wayfarer ${room.seats.filter(s => s.bot).length + 1}`, connected: true, bot: true };
+        room.seats[index] = { id: room.game ? away.id : id(), name: room.game ? away.name : room.gameId==='mosaic'?`Ceramist ${room.seats.filter(s=>s.bot).length+1}`:room.gameId==='werewolf'?`Villager ${room.seats.filter(s=>s.bot).length+1}`:room.gameId === 'blackout' ? `Relief ${room.seats.filter(s => s.bot).length + 1}` : room.gameId === 'saigon-grid' ? `Courier ${room.seats.filter(s => s.bot).length + 1}` : `Wayfarer ${room.seats.filter(s => s.bot).length + 1}`, connected: true, bot: true };
         if (room.game) { const player = room.game.players.find(p => p.id === away.id); if (player) player.connected = true; }
       } else {
-        if (room.seats.length >= (room.gameId==='werewolf'?18:room.gameId === 'blackout' ? 10 : 6)) throw Error('The table is full.');
-        room.seats.push({ id: id(), name: room.gameId==='werewolf'?`Villager ${room.seats.filter(s=>s.bot).length+1}`:room.gameId === 'blackout' ? `Relief ${room.seats.filter(s => s.bot).length + 1}` : room.gameId === 'saigon-grid' ? `Courier ${room.seats.filter(s => s.bot).length + 1}` : `Wayfarer ${room.seats.filter(s => s.bot).length + 1}`, connected: true, bot: true });
+        if (room.seats.length >= gameLimits[room.gameId][1]) throw Error('The table is full.');
+        room.seats.push({ id: id(), name: room.gameId==='mosaic'?`Ceramist ${room.seats.filter(s=>s.bot).length+1}`:room.gameId==='werewolf'?`Villager ${room.seats.filter(s=>s.bot).length+1}`:room.gameId === 'blackout' ? `Relief ${room.seats.filter(s => s.bot).length + 1}` : room.gameId === 'saigon-grid' ? `Courier ${room.seats.filter(s => s.bot).length + 1}` : `Wayfarer ${room.seats.filter(s => s.bot).length + 1}`, connected: true, bot: true });
       }
       broadcast(room); send(res, 200, roomView(room, sessionToken)); if (room.game) void runBotTurns(room); return;
     }
     if (req.method === 'POST' && match[2] === 'start') {
       const seat = viewer(room, sessionToken); if (!seat || room.host !== seat.id) throw Error('Only the host can start.');
       if (room.game) throw Error('This match has already started.');
-      if (room.seats.length < (room.gameId==='werewolf'?8:room.gameId === 'blackout' ? 5 : room.gameId === 'saigon-grid' ? 2 : 3) || room.seats.length > (room.gameId==='werewolf'?18:room.gameId === 'blackout' ? 10 : 6)) throw Error(`${room.gameId==='werewolf'?'Werewolf needs 8–18':room.gameId === 'blackout' ? 'Blackout needs 5–10' : room.gameId === 'saigon-grid' ? 'Saigon Grid needs 2–6' : room.gameId === 'tidecall' ? 'Tidecall needs 3–6' : 'Hearthlands needs 3–6'} players.`);
+      if (room.seats.length < gameLimits[room.gameId][0] || room.seats.length > gameLimits[room.gameId][1]) throw Error(`${room.gameId==='mosaic'?'Mosaic needs 2–4':room.gameId==='werewolf'?'Werewolf needs 8–18':room.gameId === 'blackout' ? 'Blackout needs 5–10' : room.gameId === 'saigon-grid' ? 'Saigon Grid needs 2–6' : room.gameId === 'tidecall' ? 'Tidecall needs 3–6' : 'Hearthlands needs 3–6'} players.`);
       if (room.seats.some(s => !s.bot && !s.connected)) throw Error('Wait for every player to connect or replace an Away player with a bot.');
-      room.game = room.gameId==='werewolf' ? werewolf.createGame(room.seats.map(({id,name})=>({id,name})),room.seed,room.werewolfSettings) : room.gameId === 'tidecall' ? tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing) : room.gameId === 'blackout' ? blackout.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.pacing) : room.gameId === 'saigon-grid' ? grid.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.debugSeed ? undefined : privateRandom());
+      room.game = room.gameId==='mosaic' ? mosaic.createGame(room.seats.map(({id,name})=>({id,name})),room.seed) : room.gameId==='werewolf' ? werewolf.createGame(room.seats.map(({id,name})=>({id,name})),room.seed,room.werewolfSettings) : room.gameId === 'tidecall' ? tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing) : room.gameId === 'blackout' ? blackout.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.pacing) : room.gameId === 'saigon-grid' ? grid.createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed) : createGame(room.seats.map(({ id, name }) => ({ id, name })), room.seed, room.debugSeed ? undefined : privateRandom());
       for (const p of room.game.players) p.connected = room.seats.find(s => s.id === p.id)!.connected;
       setDeadline(room);
       broadcast(room); send(res, 200, roomView(room, sessionToken)); void runBotTurns(room); return;
     }
     if (req.method === 'POST' && match[2] === 'rematch') {
       const seat = viewer(room, sessionToken); if (!seat || room.host !== seat.id) throw Error('Only the host can begin a rematch.');
-      if (!(room.gameId==='tidecall'&&room.game?.phase==='MATCH_OVER'||room.gameId==='werewolf'&&room.game?.phase==='GAME_OVER')) throw Error('Finish this match first.');
+      if (!(room.gameId==='tidecall'&&room.game?.phase==='MATCH_OVER'||room.gameId==='werewolf'&&room.game?.phase==='GAME_OVER'||room.gameId==='mosaic'&&room.game?.phase==='GAME_OVER')) throw Error('Finish this match first.');
       if (room.seats.some(s => !s.bot && !s.connected)) throw Error('Reconnect every Away player or explicitly replace their seat with a bot.');
       room.seed = room.debugSeed ? room.seed : randomInt(0,0x100000000);
       room.matchId = id();
-      room.game = room.gameId==='werewolf'?werewolf.createGame(room.seats.map(({id,name})=>({id,name})),room.seed,room.werewolfSettings):tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing);
+      room.game = room.gameId==='mosaic'?mosaic.createGame(room.seats.map(({id,name})=>({id,name})),room.seed):room.gameId==='werewolf'?werewolf.createGame(room.seats.map(({id,name})=>({id,name})),room.seed,room.werewolfSettings):tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing);
       // Retain action IDs across matches so a retry from the previous match stays a duplicate.
       setDeadline(room); broadcast(room); send(res,200,roomView(room,sessionToken)); return;
     }
@@ -384,7 +394,8 @@ server.on('upgrade', (req, socket, head) => {
         if (room.controllers.get(sessionToken) !== ws) throw Error('A newer tab controls this seat.');
         const actionKey = `${seat.id}:${message.id}`;
         if (room.seenActions.has(actionKey)) { ws.send(JSON.stringify({ type: 'ACTION_ACK', id: message.id })); return; }
-        if(room.gameId==='werewolf'){if(message.matchId!==room.matchId)throw Error('That action belongs to a previous match.');const g=room.game as werewolf.Game;room.game=werewolf.applyAction(g,seat.id,werewolfActionSchema.parse(message.action) as werewolf.Action);if((room.game as werewolf.Game).window!==g.window)setDeadline(room);}
+        if(room.gameId==='mosaic'){if(message.matchId!==room.matchId)throw Error('That action belongs to a previous match.');const g=room.game as mosaic.Game;if(message.expectedRevision!==undefined&&message.expectedRevision!==g.revision)throw Error('The table changed. Review the latest state.');room.game=mosaic.applyAction(g,seat.id,mosaicActionSchema.parse(message.action));setDeadline(room);}
+        else if(room.gameId==='werewolf'){if(message.matchId!==room.matchId)throw Error('That action belongs to a previous match.');const g=room.game as werewolf.Game;room.game=werewolf.applyAction(g,seat.id,werewolfActionSchema.parse(message.action) as werewolf.Action);if((room.game as werewolf.Game).window!==g.window)setDeadline(room);}
         else if (room.gameId === 'tidecall') {
           if (message.matchId !== room.matchId) throw Error('That action belongs to a previous match.');
           const action = tidecallActionSchema.parse(message.action) as tidecall.Action;
@@ -425,6 +436,7 @@ const heartbeat = setInterval(() => {
 const blackoutClock = setInterval(() => {
   for (const room of rooms.values()) {
     if (room.paused) continue;
+    if(room.gameId==='mosaic'&&room.deadlineAt&&Date.now()>=room.deadlineAt&&room.game&&room.game.phase!=='GAME_OVER'){try{room.game=mosaic.applyAction(room.game as mosaic.Game,'@system',{type:'TIMEOUT'});setDeadline(room);broadcast(room);void runBotTurns(room);}catch(error){room.deadlineAt=null;console.error('Mosaic timeout failed',error);}continue;}
     if(room.gameId==='werewolf'&&room.deadlineAt&&Date.now()>=room.deadlineAt&&room.game&&room.game.phase!=='GAME_OVER'){try{room.game=werewolf.applyAction(room.game as werewolf.Game,'@system',{type:'TIMEOUT'});setDeadline(room);broadcast(room);void runBotTurns(room);}catch(error){room.deadlineAt=null;console.error('Werewolf timeout failed',error);}continue;}
     if (room.gameId === 'tidecall' && room.deadlineAt && Date.now() >= room.deadlineAt && room.game && room.game.phase !== 'MATCH_OVER') {
       try { room.game = tidecall.applyAction(room.game as tidecall.Game,'@system',{type:'TIMEOUT'}); setDeadline(room); broadcast(room); void runBotTurns(room); }

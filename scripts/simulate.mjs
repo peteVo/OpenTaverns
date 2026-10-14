@@ -1,17 +1,18 @@
 import { build } from 'esbuild';
 const args = process.argv.slice(2);
 const game = args.includes('--game') ? args[args.indexOf('--game') + 1] : 'hearthlands';
-if (!['hearthlands', 'saigon-grid', 'blackout', 'tidecall', 'werewolf'].includes(game)) throw Error('Choose hearthlands, saigon-grid, blackout, tidecall, or werewolf.');
+if (!['hearthlands', 'saigon-grid', 'blackout', 'tidecall', 'werewolf', 'mosaic'].includes(game)) throw Error('Choose hearthlands, saigon-grid, blackout, tidecall, werewolf, or mosaic.');
 const script = `packages/${game}/src/simulate.ts`;
 const forwarded = args.filter((arg, i) => arg !== '--game' && args[i - 1] !== '--game');
 const built = await build({ entryPoints: [script], bundle: true, platform: 'node', format: 'esm', write: false });
 const module = await import(`data:text/javascript;base64,${Buffer.from(built.outputFiles[0].text).toString('base64')}`);
 const games = Number(forwarded[forwarded.indexOf('--games') + 1]) || 100;
-const players = Number(forwarded[forwarded.indexOf('--players') + 1]) || (game === 'saigon-grid' || game === 'tidecall' ? 4 : game === 'werewolf' ? 10 : game === 'blackout' ? 7 : 6);
+const players = Number(forwarded[forwarded.indexOf('--players') + 1]) || (game === 'saigon-grid' || game === 'tidecall' || game === 'mosaic' ? 4 : game === 'werewolf' ? 10 : game === 'blackout' ? 7 : 6);
 const seed = Number(forwarded[forwarded.indexOf('--seed') + 1]) || 1;
 try {
   const results = Array.from({ length: games }, (_, i) => module.simulate(seed + i, players, game === 'werewolf' && args.includes('--ruleset') ? {ruleset:args[args.indexOf('--ruleset')+1]} : undefined));
   const average = (key) => Math.round(results.reduce((sum, result) => sum + result[key], 0) / games);
+  if(game==='mosaic'){const scores=results.flatMap(r=>r.scores);const seatWins=Array(players).fill(0),initiativeWins=Array(players).fill(0),objectives={};for(const r of results){for(const seat of r.winners){seatWins[seat]++;initiativeWins[(seat-r.startingSeat+players)%players]++;}for(const o of r.objectives)if(o.selected){const n=objectives[o.id]||={selected:0,completed:0};n.selected+=players;n.completed+=o.completed;}}const mean=key=>scores.reduce((n,s)=>n+s[key],0)/scores.length;console.log(JSON.stringify({game,players,completed:games,seeds:[seed,seed+games-1],invalidMoves:0,deadlocks:0,invariantFailures:0,botDecisionFailures:0,averageFinalScore:mean('total'),scoreDistribution:scores.reduce((n,s)=>(n[Math.floor(s.total/10)*10]=(n[Math.floor(s.total/10)*10]||0)+1,n),{}),averageConnections:mean('connections'),averageRuns:mean('runs'),averageRainbows:mean('rainbows'),averageCommissions:mean('commissions'),rainbowSquareFrequency:scores.reduce((n,s)=>n+s.squares.length,0)/scores.length,straightRunFrequency:scores.reduce((n,s)=>n+s.straightRuns.length,0)/scores.length,objectives,seatWins,initiativeWins,averageDecisionMs:results.reduce((n,r)=>n+r.durationMs,0)/results.reduce((n,r)=>n+r.turns,0)},null,2));process.exit(0);}
   if(game==='werewolf'){const average=key=>Number((results.reduce((sum,r)=>sum+r[key],0)/games).toFixed(2));const wins={};const roleWins={};for(const r of results){wins[r.winner]=(wins[r.winner]||0)+1;for(const p of r.roleWins){const role=roleWins[p.role]||={seats:0,wins:0};role.seats++;if(p.won)role.wins++;}}console.log(JSON.stringify({game,players,completed:games,wins,averageDays:average('days'),nightDeaths:average('nightDeaths'),voteDeaths:average('voteDeaths'),potions:average('potions'),sheriffSurvival:results.filter(r=>r.sheriffSurvived).length,roleWins,deadlocks:0,invariantFailures:0,unresolvedActions:0},null,2));process.exit(0);}
   if (game === 'tidecall') {
     const sum = key => results.reduce((n,r) => n+r[key],0);
