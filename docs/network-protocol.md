@@ -10,8 +10,8 @@ All HTTP and WebSocket traffic uses one origin. The server issues a random 256-b
 | `POST` | `/api/tables/:code/join` | Claim or restore a seat, or enter as spectator |
 | `GET` | `/api/tables/:code` | Current projected room for this session |
 | `POST` | `/api/tables/:code/bots` | Host adds a bot or replaces an Away seat during play |
-| `POST` | `/api/tables/:code/start` | Host starts Hearthlands/Tidecall with 3–6, Saigon Grid with 2–6, Blackout with 5–10, or Werewolf with 8–18 connected seats |
-| `POST` | `/api/tables/:code/rematch` | Host starts a fresh finished Tidecall or Werewolf match in the same Table |
+| `POST` | `/api/tables/:code/start` | Host starts Hearthlands/Tidecall with 3–6, Saigon Grid with 2–6, Blackout with 5–10, Werewolf with 8–18, or Mosaic with 2–4 connected seats |
+| `POST` | `/api/tables/:code/rematch` | Host starts a fresh finished Tidecall, Werewolf or Mosaic match in the same Table |
 | `GET` | `/health` | Liveness |
 
 Creation has `{ "name": "Minh", "gameId": "saigon-grid" }`; join has `{ "name": "Linh", "spectator": false }`. A room view includes code, invitation URL, game ID, host ID, self ID or null, spectator flag, seat connection states, and that game's projection when started. Eliminated Saigon Grid players receive the spectator projection. A room code is not an authentication secret; the cookie is the seat credential.
@@ -49,3 +49,7 @@ On reconnect, the browser fetches its current projection and opens a new WebSock
 Create with `gameId: "werewolf"` and optional `werewolfSettings` (ruleset, preset, optional role array, Sheriff, pacing, night seconds, discussion seconds and death reveals). Host-only `POST /api/tables/:code/setup` updates the unstarted composition; start checks the completed role inventory against 8–18 connected seats. Werewolf intentions carry `matchId` and `window`; identity is taken from the authenticated seat, never the payload. Independent votes/private actions do not use a global expected-revision gate. Night projections omit the secret window, schedule step and raw revision; only an eligible player receives their private prompt window. Server-only TIMEOUT is rejected by client schemas.
 
 Development-only `POST /api/debug/tables/:code/advance` advances a Werewolf clock window. It requires loopback peer/host, same origin and `x-opentaverns-dev-key` matching the server management key. Production returns 404. Normal table hosts do not have moderator access.
+
+## Mosaic additions
+
+Create with `gameId: "mosaic"` and optional table pacing. Start requires 2–4 connected seats. Client `DRAFT_AND_PLACE` carries round, global turn, revision, offer ID and exactly two `{tile,row,col}` placements. The message adds match identity, UUID and expected revision. Strict schemas reject extra actor/score/outcome/refill fields. Offer identities change after refill; stale moves fail atomically. Public state includes boards, scores, market, Commissions and history, never bag order/seed/RNG. On timeout the server uses a deterministic complete legal turn. Restart retains transactions and retry IDs; rematch resets game secrets and match identity within the same Table.

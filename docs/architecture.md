@@ -30,7 +30,7 @@ Tidecall reuses room pacing, disconnect grace and bot takeover. The server advan
 
 Host-controlled rematch keeps the existing Table, current host, seats, cookies and spectators. It requires connected human seats or explicit bot replacement and resets only the selected game. Accepted action IDs remain registered and a new match ID prevents cross-match replay. Production uses a fresh seed. The platform still uses small explicit dispatch branches rather than a universal card-game framework.
 
-All five game modules supply structured content to the same Rules sheet. The client renders Tidecall through a lazy game chunk, using CSS/SVG cards and table contours. No new runtime dependency is required.
+All six game modules supply structured content to the same Rules sheet. The client renders Tidecall through a lazy game chunk, using CSS/SVG cards and table contours. No new runtime dependency is required.
 
 ## Adding a game
 
@@ -41,3 +41,9 @@ Add a game package with serializable state, an authoritative action function, a 
 Werewolf owns character distribution, Lover relationships, Sheriff office, padded night windows, private pack intentions, simultaneous votes and a deterministic death/reaction queue. It does not use parity victory. Server dispatch routes typed intentions into its pure engine and sends per-seat projections. Night public revisions stay unchanged while secret choices arrive; the server maintains fixed window deadlines even without an eligible character. Dead seats lose live private prompts except their own mandatory reaction. Final truth and replay become public only after completion.
 
 Werewolf uses the existing sessions, latest-tab policy, idempotent action IDs, grace, takeover, durable saves, Rules sheet and rematch transport. Its prompt window and match identifier reject stale actions while permitting independent simultaneous arrivals. Its lazy frontend chunk supplies an original SVG village and private phone controls. No generic social-game framework was introduced. See [Werewolf engine](werewolf-engine.md).
+
+## Mosaic: atomic drafting and composition
+
+Mosaic owns its conserved hundred-tile pool, five two-tile market slots, connected personal boards, rotating initiative and pure scoring/Commission predicates. The engine validates two ordered placements before consuming an offer or changing a board. Scores are derived from boards. DRAFTING and GAME_OVER are authoritative; preview/order/undo are client-local and keyed to match/turn. The public projection omits future bag order and random state.
+
+The platform reuses cookie sessions, UUID retries, current-tab control, deadlines/grace, populated-seat takeover, atomic saves, shared Rules and fresh-match lifecycle. A shared small player-count table replaces repeated bound expressions. A lazy game chunk supplies DOM/SVG ceramics and responsive score inspection. See [Mosaic engine](mosaic-engine.md).

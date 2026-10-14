@@ -4,12 +4,13 @@ import { rules as saigonGridRules } from '@opentaverns/saigon-grid/rules';
 import { rules as blackoutRules } from '@opentaverns/blackout/rules';
 import { rules as tidecallRules } from '@opentaverns/tidecall/rules';
 import { rules as werewolfRules } from '@opentaverns/werewolf/rules';
+import { rules as mosaicRules } from '@opentaverns/mosaic/rules';
 import './rules.css';
 
-export type RulesGame = 'hearthlands' | 'saigon-grid' | 'blackout' | 'tidecall' | 'werewolf';
+export type RulesGame = 'hearthlands' | 'saigon-grid' | 'blackout' | 'tidecall' | 'werewolf' | 'mosaic';
 type Section = { id: string; title: string; paragraphs: string[]; example?: string };
 type Rules = { title: string; summary: string; quick: string[]; sections: Section[] };
-const content: Record<RulesGame, Rules> = { hearthlands: hearthlandsRules, 'saigon-grid': saigonGridRules, blackout: blackoutRules, tidecall: tidecallRules, werewolf:werewolfRules };
+const content: Record<RulesGame, Rules> = { hearthlands: hearthlandsRules, 'saigon-grid': saigonGridRules, blackout: blackoutRules, tidecall: tidecallRules, werewolf:werewolfRules,mosaic:mosaicRules };
 
 export function RulesSheet({ gameId, section, onClose }: { gameId: RulesGame; section?: string; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);

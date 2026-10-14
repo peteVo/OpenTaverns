@@ -19,3 +19,7 @@ Tidecall live public state has no hands, unrevealed Forecast values, Compass cho
 ## Werewolf privacy
 
 Night roles, spares, votes, action history, victim, causes and RNG stay server-side. Public night revisions and equal padded deadlines do not reveal who submitted a response or whether a scheduled character is present. Own character/knowledge and living pack information are explicit entitlements; dead wolves no longer receive pack updates. Public death reveals do not include private knowledge. Strict schemas, cookie-chosen actor, latest-tab control, match/window guards and retained retry IDs cover hidden decisions. Post-game truth is intentionally complete. Saved data directories contain these secrets and must remain private. See the [engine privacy model](werewolf-engine.md).
+
+## Mosaic transactions
+
+The selected offer must exist, the actor must own the active turn, and both tile IDs must match that offer. Revision, round, turn, cells, emptiness and sequential adjacency are checked before any mutation. Strict schemas reject partial/oversized placement arrays, invented identities, score changes, forced victory and future draws. Projections exclude bag order/RNG/seed. Spectators remain read-only. Current-tab policy, match identity and persisted action UUIDs cover duplicates, reconnects and stale submissions. Browser tests include HTTP-compatible UUID fallback for phone clients.

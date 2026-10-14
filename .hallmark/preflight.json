@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-14",
+  "managedBy": "DESIGN.md",
+  "framework": "React / Vite",
+  "typography": {
+    "source": "DESIGN.md:9",
+    "display": "Fraunces roman 500",
+    "body": "DM Sans"
+  },
+  "palette": {
+    "source": "DESIGN.md:10",
+    "family": "warm paper / charcoal / copper; game-scoped ceramic tokens"
+  },
+  "spacing": {
+    "source": "DESIGN.md:11",
+    "scale": "4-point"
+  },
+  "motion": {
+    "source": "DESIGN.md:13",
+    "stance": "CSS state motion under 220ms; reduced motion; no motion library"
+  },
+  "scope": "Mosaic engine, table dispatch, lazy renderer, Rules, bots, fixtures, tests and docs; other engines preserved"
+}

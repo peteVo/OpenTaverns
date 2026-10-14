@@ -1,0 +1,210 @@
+{
+  "completed": 1002,
+  "invalidMoves": 0,
+  "deadlocks": 0,
+  "invariantFailures": 0,
+  "botDecisionFailures": 0,
+  "rows": [
+    {
+      "players": 2,
+      "completed": 334,
+      "seeds": [
+        1000,
+        1333
+      ],
+      "averageFinalScore": 70.1811377245509,
+      "scoreDistribution": {
+        "40": 5,
+        "50": 58,
+        "60": 239,
+        "70": 285,
+        "80": 78,
+        "90": 3
+      },
+      "averageConnections": 35.39820359281437,
+      "averageRuns": 23.085329341317365,
+      "averageRainbows": 0.9880239520958084,
+      "averageCommissions": 10.709580838323353,
+      "rainbowSquareFrequency": 0.19760479041916168,
+      "straightRunFrequency": 4.916167664670659,
+      "objectives": {
+        "Bridge": {
+          "selected": 218,
+          "completed": 107
+        },
+        "Spectrum": {
+          "selected": 248,
+          "completed": 168
+        },
+        "Centerpiece": {
+          "selected": 240,
+          "completed": 239
+        },
+        "Cascade": {
+          "selected": 222,
+          "completed": 122
+        },
+        "Ribbon": {
+          "selected": 182,
+          "completed": 181
+        },
+        "Four Corners": {
+          "selected": 226,
+          "completed": 16
+        }
+      },
+      "familyCounts": {
+        "Ochre": 2698,
+        "Fern": 2673,
+        "Orchid": 2693,
+        "Ember": 2698,
+        "Tide": 2598
+      },
+      "seatWins": [
+        174,
+        168
+      ],
+      "initiativeWins": [
+        179,
+        163
+      ],
+      "averageDecisionMs": 2.343171586826347
+    },
+    {
+      "players": 3,
+      "completed": 334,
+      "seeds": [
+        1000,
+        1333
+      ],
+      "averageFinalScore": 71.09181636726547,
+      "scoreDistribution": {
+        "40": 4,
+        "50": 51,
+        "60": 378,
+        "70": 431,
+        "80": 128,
+        "90": 10
+      },
+      "averageConnections": 35.78842315369261,
+      "averageRuns": 23.69560878243513,
+      "averageRainbows": 1.0229540918163673,
+      "averageCommissions": 10.584830339321357,
+      "rainbowSquareFrequency": 0.20459081836327345,
+      "straightRunFrequency": 5.029940119760479,
+      "objectives": {
+        "Bridge": {
+          "selected": 327,
+          "completed": 156
+        },
+        "Spectrum": {
+          "selected": 372,
+          "completed": 234
+        },
+        "Centerpiece": {
+          "selected": 360,
+          "completed": 357
+        },
+        "Cascade": {
+          "selected": 333,
+          "completed": 182
+        },
+        "Ribbon": {
+          "selected": 273,
+          "completed": 271
+        },
+        "Four Corners": {
+          "selected": 339,
+          "completed": 33
+        }
+      },
+      "familyCounts": {
+        "Ochre": 4039,
+        "Orchid": 3992,
+        "Tide": 3980,
+        "Ember": 4040,
+        "Fern": 3989
+      },
+      "seatWins": [
+        117,
+        124,
+        103
+      ],
+      "initiativeWins": [
+        125,
+        123,
+        96
+      ],
+      "averageDecisionMs": 2.0880433233532973
+    },
+    {
+      "players": 4,
+      "completed": 334,
+      "seeds": [
+        1000,
+        1333
+      ],
+      "averageFinalScore": 71.35553892215569,
+      "scoreDistribution": {
+        "40": 4,
+        "50": 89,
+        "60": 472,
+        "70": 572,
+        "80": 186,
+        "90": 13
+      },
+      "averageConnections": 36.08233532934132,
+      "averageRuns": 23.906437125748504,
+      "averageRainbows": 1.0553892215568863,
+      "averageCommissions": 10.311377245508982,
+      "rainbowSquareFrequency": 0.21107784431137724,
+      "straightRunFrequency": 5.040419161676646,
+      "objectives": {
+        "Bridge": {
+          "selected": 436,
+          "completed": 217
+        },
+        "Spectrum": {
+          "selected": 496,
+          "completed": 292
+        },
+        "Centerpiece": {
+          "selected": 480,
+          "completed": 476
+        },
+        "Cascade": {
+          "selected": 444,
+          "completed": 224
+        },
+        "Ribbon": {
+          "selected": 364,
+          "completed": 364
+        },
+        "Four Corners": {
+          "selected": 452,
+          "completed": 31
+        }
+      },
+      "familyCounts": {
+        "Ochre": 5337,
+        "Orchid": 5363,
+        "Ember": 5321,
+        "Tide": 5355,
+        "Fern": 5344
+      },
+      "seatWins": [
+        78,
+        84,
+        85,
+        105
+      ],
+      "initiativeWins": [
+        108,
+        69,
+        87,
+        88
+      ],
+      "averageDecisionMs": 2.1971250973053853
+    }
+  ]
+}

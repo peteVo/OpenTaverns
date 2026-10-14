@@ -339,7 +339,7 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL) {
       room.matchId = id();
       room.game = room.gameId==='mosaic'?mosaic.createGame(room.seats.map(({id,name})=>({id,name})),room.seed):room.gameId==='werewolf'?werewolf.createGame(room.seats.map(({id,name})=>({id,name})),room.seed,room.werewolfSettings):tidecall.createGame(room.seats.map(({id,name}) => ({id,name})),room.seed,room.pacing);
       // Retain action IDs across matches so a retry from the previous match stays a duplicate.
-      setDeadline(room); broadcast(room); send(res,200,roomView(room,sessionToken)); return;
+      setDeadline(room); broadcast(room); send(res,200,roomView(room,sessionToken)); void runBotTurns(room); return;
     }
     send(res, 405, { error: 'That request is unavailable.' });
   } catch (error) { send(res, 400, { error: error instanceof z.ZodError ? 'Check the details you entered.' : error instanceof Error ? error.message : 'Request failed.' }); }
