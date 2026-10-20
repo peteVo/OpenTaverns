@@ -1,6 +1,8 @@
 # OpenTaverns
 
-OpenTaverns is a browser table for friends with five original games and Werewolf. **Hearthlands** is a 3–6 player illustrated frontier strategy game about connected routes, construction, and Renown. **Saigon Grid** is a 2–6 player city strategy game about streets, auctions, development, negotiation, debt, and Insolvency. **Blackout** is a 5–10 player hidden-role game about keeping a fictional city working through eight shifts. **Tidecall** is a 3–6 player prediction and trick-taking game with private hands and changing Tides. **Werewolf** is an 8–18 player adaptation of The Werewolves of Miller’s Hollow Classic, with private characters, an automatic moderator and optional Defender/Village Idiot roles. **Mosaic** is a 2–4 player original ceramic tile-drafting game with connected compositions and shared Gallery Commissions. Players create or join with a table code, invitation link, or QR code and a display name. No account is needed.
+OpenTaverns is a browser-based multiplayer game table for friends. It currently includes six games: **Hearthlands** (3–6 players), an illustrated frontier strategy game; **Saigon Grid** (2–6), a city game about auctions, development, negotiation, and debt; **Blackout** (5–10), hidden-role infrastructure crisis; **Tidecall** (3–6), prediction and trick-taking with private hands; **Werewolf** (8–18), a digital adaptation of *The Werewolves of Miller’s Hollow Classic* with an automatic moderator and optional Defender/Village Idiot roles; and **Mosaic** (2–4), original ceramic tile drafting and composition. Players create or join a table by code, invitation link, or QR code and choose a display name. No account is needed.
+
+The application uses React, TypeScript, Vite, and a Node.js/WebSocket server. Each game has a separate rules engine; the server validates actions and sends each player only the state they are allowed to see. Tables are saved locally so a single server can restore them after restart.
 
 ![Hearthlands board on desktop](docs/images/hearthlands-desktop.png)
 
@@ -28,7 +30,7 @@ OpenTaverns is a browser table for friends with five original games and Werewolf
 
 ## Start locally
 
-Requirements: Node.js 20+ and npm.
+Requirements: Node.js 20.19+ or 22.12+ and npm (the installed Vite version's supported Node range).
 
 ```sh
 npm ci
@@ -36,6 +38,8 @@ npm run dev
 ```
 
 Open `http://localhost:5173`. The web development server forwards API and WebSocket traffic to the authoritative server on port 3000. Choose a game and create a table, then open the invitation in separate browser profiles or devices. The host can add bots in the lobby.
+
+The web development server listens on all network interfaces for local Wi-Fi testing. The API and WebSocket proxy target `localhost:3000`; keep the server on its default port unless you also update the Vite proxy configuration in `apps/web/vite.config.ts`.
 
 For local diagnosis, the development server exposes full table state at `http://localhost:3000/api/debug/tables/CODE`. It is disabled in production and restricted to loopback access.
 
@@ -55,6 +59,8 @@ All six games save tables automatically to `data/` after every accepted action a
 The server prints a **private Host management link** at startup. Open it to list all saved tables, reopen invitations and permanently delete tables. The collection footer also links to **Host register** at `/manage`; it requires the key from the private link. A deletion confirmation identifies the table and connected players. Deleting closes connected clients and removes the saved snapshot.
 
 Keep `data/` between upgrades and back it up while the server is stopped. It contains private game state and seat credentials; never publish it. `OPENTAVERNS_DATA_DIR` selects another directory. `OPENTAVERNS_ADMIN_KEY` may supply a private key of 32–200 characters; otherwise a random key is generated once in `data/admin-key`. The key grants management access to every table. A lock prevents two server processes using the same directory.
+
+The server also reads `PORT` (default `3000`; hosting providers commonly set it). The optional variables are `PORT`, `OPENTAVERNS_DATA_DIR`, and `OPENTAVERNS_ADMIN_KEY`. `.env.example` is a reference file; this repository does not load `.env` automatically. Configure variables in your shell or hosting service. Never put real keys in `.env.example` or commit `.env`.
 
 When developing through port 5173, use `/manage` there with the same key, or use the printed port-3000 link after building the client. For deployment, place the data directory on a persistent disk/volume and set `OPENTAVERNS_DATA_DIR` to its mount path. An ephemeral filesystem cannot preserve tables when the host replaces the container.
 
@@ -80,6 +86,16 @@ Run `npm run dev` on the host computer. Open `http://HOST_IP:5173` from devices 
 | `npm run simulate -- --game werewolf --games 1000 --players 12` | Classic Werewolf bot simulation, 8–18 seats; add `--ruleset CLASSIC_PLUS` for Defender/Idiot |
 | `npm run simulate -- --game mosaic --games 1000 --players 4` | Mosaic complete-match simulations and pattern/Commission metrics, 2–4 seats |
 | `node scripts/tidecall-scoring.mjs` | Compare Tidecall scoring candidates and unconditional zero strategy |
+
+The browser suite is configured for Microsoft Edge (`channel: 'msedge'`) and requires Edge installed on the computer. Development-only scenario tests can be selected with `npm run test:e2e -- --development`; those fixtures are not exposed by production servers.
+
+## Project guides
+
+- [Agent instructions](AGENTS.md) — working conventions and validation commands.
+- [Architecture](docs/ARCHITECTURE.md) — runtime boundaries, data flow, privacy and persistence.
+- [Current status](docs/CURRENT_STATUS.md) — implemented state, limitations, and next checks.
+- [Decision log](docs/DECISIONS.md) — decisions supported by the source, with certainty stated.
+- [Network protocol](docs/network-protocol.md), [security model](docs/security.md), and [table storage](docs/table-storage.md).
 
 ## How Hearthlands works
 
@@ -142,7 +158,7 @@ The phone interface supports tap placement, order changes, editing, Undo, local 
 
 The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All six rule states serialize as JSON and are stored in atomic room snapshots without changing the rules packages.
 
-See [architecture](docs/architecture.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
+See [architecture](docs/ARCHITECTURE.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
 
 ## Accessibility and mobile
 

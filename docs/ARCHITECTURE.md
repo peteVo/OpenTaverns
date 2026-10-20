@@ -1,5 +1,23 @@
 # Architecture
 
+## Repository and runtime
+
+This is an npm-workspaces monorepo. `apps/web` is the React/TypeScript browser application; `apps/server` is the Node.js HTTP and WebSocket host; each `packages/<game>` package owns a deterministic, browser-independent game engine. The web app imports game renderers lazily. Shared table, session and transport code stays in the server and shared web shell.
+
+```mermaid
+flowchart LR
+  Browser[React client] -->|HTTP actions / WebSocket| Server[Authoritative Node server]
+  Server --> Room[Room and session registry]
+  Room --> Engine[Selected headless game package]
+  Engine -->|validated state| Room
+  Room -->|public or per-seat projection| Browser
+  Room -->|atomic versioned JSON snapshot| Disk[(Private data directory)]
+```
+
+During development, Vite runs on port 5173 and proxies `/api` and `/ws` to the server on port 3000. In production, the server serves the built `apps/web/dist` client and handles HTTP and WebSocket traffic from one origin. `npm run build` typechecks, builds the client, then bundles the server. The checked-in Render Blueprint runs one Node web service; it needs persistent disk storage for tables. `PORT`, `OPENTAVERNS_DATA_DIR`, and `OPENTAVERNS_ADMIN_KEY` are the server environment settings. See the root README and [table storage](table-storage.md) for setup and operations.
+
+Each room's accepted actions are handled serially by the single server process. The selected engine validates the action and returns a new valid state; the server saves the updated room before acknowledging/broadcasting its viewer-specific projection. This ordering avoids acknowledging unsaved actions. The transport uses HTTP for table/session operations and WebSocket messages for live state and actions; detailed message names are in [network protocol](network-protocol.md).
+
 ## Boundaries
 
 The room server knows codes, seats, host privilege, spectators, cookie sessions, connections, and one selected game ID. Hearthlands owns Regions, Materials, private hands, and Renown. Saigon Grid owns its city circuit, Holdings, Credits, auctions, trades, and obligations. Blackout owns factions, professions, Incidents, concurrent Work Orders, Stability, Crisis, Insight, and Audits. Each browser renders a projected snapshot and submits a typed action to the selected game's headless `applyAction` engine. Rejected actions leave the original state unchanged.
@@ -30,7 +48,7 @@ Tidecall reuses room pacing, disconnect grace and bot takeover. The server advan
 
 Host-controlled rematch keeps the existing Table, current host, seats, cookies and spectators. It requires connected human seats or explicit bot replacement and resets only the selected game. Accepted action IDs remain registered and a new match ID prevents cross-match replay. Production uses a fresh seed. The platform still uses small explicit dispatch branches rather than a universal card-game framework.
 
-All six game modules supply structured content to the same Rules sheet. The client renders Tidecall through a lazy game chunk, using CSS/SVG cards and table contours. No new runtime dependency is required.
+All six game modules supply structured content to the same Rules sheet. Game renderers are loaded as separate client chunks and use the existing React/CSS/SVG stack. No new runtime dependency is required.
 
 ## Adding a game
 
@@ -47,3 +65,7 @@ Werewolf uses the existing sessions, latest-tab policy, idempotent action IDs, g
 Mosaic owns its conserved hundred-tile pool, five two-tile market slots, connected personal boards, rotating initiative and pure scoring/Commission predicates. The engine validates two ordered placements before consuming an offer or changing a board. Scores are derived from boards. DRAFTING and GAME_OVER are authoritative; preview/order/undo are client-local and keyed to match/turn. The public projection omits future bag order and random state.
 
 The platform reuses cookie sessions, UUID retries, current-tab control, deadlines/grace, populated-seat takeover, atomic saves, shared Rules and fresh-match lifecycle. A shared small player-count table replaces repeated bound expressions. A lazy game chunk supplies DOM/SVG ceramics and responsive score inspection. See [Mosaic engine](mosaic-engine.md).
+
+## Verified scope and limitations
+
+The components above are implemented in the repository. Named scenario routes are development-only; they are not production game content. Persistence is a local single-writer JSON store, not a distributed database. Rooms and live sockets are process-local, so the current server must run as one instance. Client-side preview state (for example, Mosaic placement staging) is distinct from accepted server state. E2E tests use Playwright configured for the installed Microsoft Edge browser channel.
