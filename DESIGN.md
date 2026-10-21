@@ -1,41 +1,144 @@
-# OpenTaverns design
+---
+name: OpenTaverns
+description: A shared online table for six games, framed by a quiet editorial platform.
+colors:
+  paper: "#f3f0e7"
+  surface: "#fbf9f2"
+  ink: "#263b31"
+  muted: "#53665b"
+  line: "#b9c0b2"
+  forest: "#263e33"
+  copper: "#b96842"
+  focus: "#97502f"
+typography:
+  display:
+    fontFamily: "Fraunces, Georgia, serif"
+    fontSize: "clamp(3.3rem, 6.4vw, 6rem)"
+    fontWeight: 500
+    lineHeight: 1.02
+    letterSpacing: "-0.04em"
+  body:
+    fontFamily: "DM Sans, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.65
+rounded:
+  flat: "2px"
+  card: "9px"
+spacing:
+  1: "4px"
+  2: "8px"
+  3: "12px"
+  4: "16px"
+  6: "24px"
+  8: "32px"
+  12: "48px"
+components:
+  button-primary:
+    backgroundColor: "#dfb58c"
+    textColor: "#20372c"
+    rounded: "{rounded.flat}"
+    height: "52px"
+  rules-dialog:
+    backgroundColor: "#f4f1e8"
+    textColor: "#26312b"
+    rounded: "{rounded.flat}"
+    width: "min(980px, calc(100vw - 28px))"
+---
 
-**Creative north star:** a contemporary place for friends to open a shared table. The platform frames each game; the game becomes the main object. Six games have distinct visual languages while sharing an invitation, wordmark, clear controls, and player identity.
+# Design System: OpenTaverns
 
-## Platform system
+## Overview
 
-- **Genre:** atmospheric tabletop editorial. A compact marquee introduces the collection; game selection uses an asymmetric six-volume shelf, not matching feature cards. Tables use a workbench layout. Rules read as a long document.
-- **Signature move:** each volume shows its own board grammar before a table is created. Hearthlands uses paths and Sites; Saigon Grid uses a street circuit and a river trace.
-- **Typography:** Fraunces (roman, 500) for display and game values; DM Sans (400–800) for instructions, controls, labels, and long text. Vietnamese proper names must render with their full diacritics. No decorative italic headlines.
-- **Shared colors:** charcoal `#262e29`, warm paper `#e9e6d9`, copper `#c58056`, and focus `#bd743b`. Accent is reserved for invitations, current action, and selection.
-- **Spacing:** 4-point increments, generally 8/12/16/24/32/48/64. Board geometry may use exact pixel measurements to keep its cells aligned.
-- **Controls:** flat rectangles, visible labels, minimum 44px touch targets for primary actions, visible keyboard focus. The invitation always offers QR and a copyable link.
-- **Motion:** only respond to state changes and presses. Animations are under 220ms and absent when reduced motion is requested. No ambient floating or glow.
-- **Mobile:** game context and the next action must be visible without reading tiny text. The board may pan within its own bounded area; a changing location label shows the current stop.
+**Creative North Star: “A shared table, with six distinct game worlds.”**
 
-## Game identities
+OpenTaverns is a contemporary place for friends to open a shared table. The platform gives the collection a calm, editorial frame; each game remains the main visual object and keeps its own palette and board language. The home page now puts the practical task first: choose a game, create a table, or join with an invitation, followed by an asymmetric shelf that previews all six games.
 
-| | Hearthlands | Saigon Grid |
-| --- | --- | --- |
-| Character | Illustrated landscape, tactile routes | Metropolitan cartography, street circuit |
-| Palette | Mineral ground, terrain greens, ochre, clay | Blue-green transit ink, civic cream, rust |
-| Main object | 19-region SVG map with keyboard-accessible Sites and Links | 28-stop city circuit with public portfolios and a district summary center |
-| Actions | Construction and Materials beside the map | Purchase, auction, trade, and debt beside the circuit |
+Fraunces brings a bookish display voice, while DM Sans keeps instructions and controls direct. The shared interface uses warm paper, forest ink, flat controls, and clear focus states. Game-specific themes remain local to each game. English is the current interface language; long names and proper-name diacritics should remain legible, but no localization system is implemented.
 
-## Blackout and Tidecall
+**Key Characteristics:**
+- Task-first table entry, then an asymmetric six-volume collection shelf.
+- One typography pairing and shared control language across six separate game identities.
+- Game boards and game-specific color systems stay visually distinct.
 
-Blackout uses a civic night-shift schematic, public system nodes, and discrete private role/action controls. Tidecall uses a printed navigation table: ivory paper, deep sea contours, copper accents, original SVG suits, clear card corners and a deliberate select/Play interaction. Public Forecasts stay small; the table and private hand carry the composition. A short winner mark precedes collection. Mobile uses a compact Tide strip, two-column crew, a dedicated crowded-trick arrangement and horizontal hand. Unlocked decisions survive the shared Rules sheet and reload in the same tab.
+## Colors
 
-Tidecall color/font tokens live in root `tokens.css`, scoped by `tc` names so other games retain their established designs. Suit identity also uses symbols, patterns and text. Only actual game objects get rounded containers. Motion uses opacity and transforms; reduced motion keeps the same information without travel. The collection is a six-volume shelf with game-specific artwork, sizes and palettes.
+The shared platform palette pairs warm paper and forest ink with a restrained copper accent; individual games add their own colors in their local styles.
 
-## Design boundaries
+### Primary
+- **Forest** (`{colors.forest}`): Shared dark surface for table entry and selected platform elements.
+- **Copper** (`{colors.copper}`): Selection and small emphasis, including the selected game outline.
 
-No fake wood, parchment, neon, fintech dashboards, casino styling, generic matched cards, gradients, or glass containers. Districts use names and marks as well as color. The board itself is the artwork; avoid a logo-only dead center. Use containment only for actual objects such as a Chronicle, trade offer, Holding, or invitation.
+### Neutral
+- **Warm Paper** (`{colors.paper}`) and **Soft Surface** (`{colors.surface}`): Main page and form surfaces.
+- **Forest Ink** (`{colors.ink}`) and **Muted Green** (`{colors.muted}`): Main text and supporting copy.
+- **Sage Line** (`{colors.line}`): Dividers and quiet boundaries.
+- **Focus Brown** (`{colors.focus}`): Visible keyboard focus outline.
 
-## Werewolf
+## Typography
 
-A stable village circle with original line-drawn houses and quiet character silhouettes. Warm limewash/olive by day; slate-indigo/candle cream at night. The mobile private area precedes the village when opened. Every live public house uses the same artwork; roles appear only deliberately in private or after a permitted reveal. Crowded phone seats have a full-name/public-status disclosure. Shared Rules never dismiss an unlocked choice. See [rendered critique and refinements](docs/werewolf-visual-audit.md).
+**Display Font:** Fraunces (Georgia, serif)
+**Body Font:** DM Sans (sans-serif)
 
-## Mosaic
+**Character:** Fraunces gives game names, major headings, and selected values an editorial character. DM Sans carries instructions, navigation, labels, and longer reading comfortably.
 
-An intimate ceramic studio: the personal 5×5 composition dominates, paired Palettes act as physical drafting objects, and a narrow score/Gallery rail explains the work. Five original SVG marks and subtle corner hatching identify tile families without relying on color. Chalk/olive ink and fired-charcoal/cream studio treatments retain the same ceramic colors. Phone cells stay at least 44px; compact previews and confirmation remain in natural document flow without covering controls. Score inspection returns the phone view to the contributing cells. Existing Fraunces roman/DM Sans, flat controls, token colors and short reduced-motion-aware state animation are preserved.
+### Hierarchy
+- **Display** (500, responsive clamp, tight 1.02 line height): Home headline and large game titles.
+- **Headline / title** (Fraunces 500): Section headings and game-specific titles; use the local game's established scale.
+- **Body** (DM Sans 400, generally 1rem, 1.5–1.65 line height): Instructions, rules, descriptions, and form text.
+- **Label** (DM Sans 600–800, generally .8–.9rem): Navigation, controls, status, and compact metadata.
+
+**The Two-Voice Rule.** Use Fraunces for display and game values; use DM Sans for instructions and controls. Avoid decorative italic headlines.
+
+## Layout
+
+The home page uses a wide two-column welcome and table-entry stage, then a six-column asymmetric game shelf: Hearthlands and Saigon Grid receive wider spans, while Mosaic spans the shelf; the remaining volumes sit between them. At 760px and below, the stage stacks and the shelf becomes one column. Content uses fluid side padding, with a 1600px platform maximum and 1440px collection maximum.
+
+The shared spacing steps are 4, 8, 12, 16, 24, 32, and 48px. Game boards may use exact pixel geometry to preserve aligned cells and map positions. On game tables, context and actions sit beside the board on wide screens and flow vertically on phones; board panning stays bounded to the board area.
+
+## Elevation & Depth
+
+The platform is flat by default. Contrast, borders, spacing, and selected outlines establish hierarchy; dialogs use a shadow to separate the active document from its backdrop. State transitions are short (180ms shared token), and reduced-motion preferences suppress optional movement.
+
+## Shapes
+
+Platform controls and collection volumes use nearly square corners (2px); Tidecall's card-like objects retain their game-specific rounded corners (9px token). Use borders and tonal surfaces to group actual controls or game objects. Keep keyboard focus visible with a 3px outline and offset.
+
+## Components
+
+### Buttons and fields
+- **Primary action:** Full-width warm accent in the homepage entry panel, with dark text and a 52px minimum height.
+- **Secondary actions:** Flat, labeled controls with clear borders or underlined link treatment. Primary actions, inputs, navigation links, and rules controls provide at least 44px target height where styled by the shared platform.
+- **Fields:** Warm light surface, dark text, near-square border, and clear label. Preserve legible placeholders and visible focus.
+
+### Home collection volumes
+Each volume previews its own game grammar and palette before a table is opened. Keep selection explicit and provide a separate “How to play” entry for every game. The collection is asymmetric rather than six matching feature cards.
+
+### Rules document
+Rules open in a native `<dialog>` as a full reading surface with section navigation, quick rules, and game-specific accent colors. On narrow screens the section navigation becomes a horizontal strip and the rules text remains in a vertically scrolling document.
+
+### Invitation copy
+Invitation UI offers a copyable link and QR code where the invitation surface supports both. If clipboard access is unavailable, provide a selectable text field fallback and a readable status message.
+
+### Six game identities
+- **Hearthlands:** Illustrated landscape and tactile routes; mineral ground, terrain greens, ochre, and clay. The 19-region map and construction/material actions define its table.
+- **Saigon Grid:** Metropolitan cartography and a street circuit; blue-green transit ink, civic cream, and rust. A 28-stop circuit frames public portfolios and district context.
+- **Blackout:** Civic night-shift schematic with public system nodes and discrete private role/action controls.
+- **Tidecall:** Printed navigation table with ivory paper, sea contours, copper accents, original SVG suits, and clear card corners. The table and private hand carry the composition.
+- **Werewolf:** Stable village circle with original line-drawn houses and quiet character silhouettes; warm limewash/olive by day and slate-indigo/candle cream at night. Keep private roles private until a permitted reveal.
+- **Mosaic:** Intimate ceramic studio centered on the personal 5×5 composition; paired Palettes and a narrow score/Gallery rail. Tile families use original marks and hatching as well as color.
+
+## Do's and Don'ts
+
+### Do:
+- **Do** preserve each game's local visual identity when changing shared platform styles.
+- **Do** keep primary actions and important touch controls at least 44px high.
+- **Do** use text, symbols, or patterns alongside color for game-state distinctions.
+- **Do** keep rules readable as a document and invitations copyable, with a text-selection fallback.
+- **Do** ensure long names and Vietnamese diacritics render cleanly in the chosen fonts.
+
+### Don't:
+- **Don't** flatten the six games into a single palette or matching-card collection.
+- **Don't** use fake wood, parchment, neon, casino styling, gradients, or glass containers in the shared platform.
+- **Don't** hide roles, choices, or status distinctions behind color alone.
+- **Don't** use ambient floating or glow; motion should respond to interface state and respect reduced-motion settings.

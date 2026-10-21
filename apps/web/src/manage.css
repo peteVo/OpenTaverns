@@ -10,3 +10,16 @@ html:has(.management),body:has(.management){overflow-x:clip}
 .management-confirm{width:min(520px,calc(100vw - 32px));border:1px solid var(--color-tc-line);background:var(--color-tc-card);color:var(--color-tc-ink);padding:30px}.management-confirm::backdrop{background:var(--color-tc-shadow)}.management-confirm h2{font-size:2.2rem;margin:15px 0;overflow-wrap:anywhere}.management-confirm p{color:var(--color-tc-muted)}.management-confirm>div{display:flex;gap:10px;justify-content:flex-end;margin-top:26px}.management .management-delete{background:var(--mg-danger);border-color:var(--mg-danger);color:var(--color-tc-card)}.management .management-delete:hover:not(:disabled){background:var(--color-tc-ink);color:var(--color-tc-card)}
 @media(max-width:850px){.management-table{grid-template-columns:130px minmax(0,1fr) 145px;gap:16px}.management-status{grid-column:2;grid-row:2}.management-actions{grid-column:3;grid-row:1 / span 2}.management header .brand{font-size:.85rem}.management-intro{padding-top:40px}}
 @media(max-width:550px){.management header{padding:16px 18px;gap:10px}.management header .brand{font-size:.68rem;letter-spacing:.12em}.management header>a:last-child{font-size:.7rem}.management-intro{padding:35px 18px 24px}.management-register{padding:0 18px}.management-toolbar{align-items:flex-start;flex-direction:column}.management-table{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;padding:22px 0}.management-code{grid-column:1;grid-row:1}.management-detail{grid-column:1 / span 2;grid-row:2}.management-status{grid-column:2;grid-row:1}.management-actions{grid-column:1 / span 2;grid-row:3;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.management-confirm{padding:22px}.management-confirm>div{justify-content:stretch}.management-confirm>div>button{flex:1;padding:12px 8px}.management-login{margin:0 18px;padding:24px 0}}
+
+.management-toolbar>div:first-child{min-width:0}
+.management-toolbar>div:first-child p{margin:7px 0 0;color:var(--color-tc-muted);font-size:.82rem}
+.management-toolbar>div:last-child button{min-width:108px}
+.management-loading{max-width:1200px;margin:0 auto;padding:18px 24px;color:var(--color-tc-muted)}
+.management-loading h2{margin:10px 0 0;font-size:1.45rem}
+.management-loading[role="status"]{border-top:1px solid var(--color-tc-line)}
+.management-notice{color:#284b3a}
+.management-login input:focus-visible{outline:3px solid var(--color-tc-focus);outline-offset:3px}
+.management-confirm{max-height:min(88dvh,720px);overflow:auto;overscroll-behavior:contain;scrollbar-color:#8c9d91 var(--color-tc-card);padding-bottom:max(30px,env(safe-area-inset-bottom))}
+.management-confirm::backdrop{background:var(--color-tc-shadow)}
+.management-confirm>div>button{min-height:48px}
+@media(max-width:550px){.management-toolbar>div:last-child{width:100%;display:grid;grid-template-columns:1fr 1fr}.management-toolbar>div:last-child button{min-width:0}.management-loading{padding:16px 18px}.management-confirm{width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:22px max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}.management-confirm>div{flex-wrap:wrap}.management-confirm>div>button{min-width:120px}}

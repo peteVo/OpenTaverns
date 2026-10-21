@@ -10,7 +10,7 @@ test('the collection, Saigon lobby, and city board work on desktop and phones', 
   const errors: string[] = [];
   for (const page of [host,guest]) page.on('pageerror', error => errors.push(error.message));
   await host.goto('/'); await host.waitForLoadState('networkidle');
-  await expect(host.getByText('Choose tonight\'s world.')).toBeVisible();
+  await expect(host.getByRole('heading', { name: 'A table for every kind of evening.' })).toBeVisible();
   await host.screenshot({ path: 'test-results/grid-platform-desktop-pass2.png', fullPage: true });
   await host.setViewportSize({ width: 390, height: 844 });
   expect(await host.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);

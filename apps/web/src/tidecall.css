@@ -20,5 +20,18 @@ html:has(.tc),body:has(.tc){overflow-x:clip}
 @media(max-width:600px){.tc .tc-player .tc-token{display:block;font-size:.95rem}.tc .tc-large-table{min-height:345px}.tc .tc-large-table .tc-played{inset:50px 8px 30px;grid-template-rows:repeat(2,125px)}.tc-compass-recap{font-size:.75rem}.tc .tc-trick-resolution .tc-decision{min-height:44px}.tc-lobby-cards>.tc-card{width:86px;height:124px}.tc-lobby-actions>.tc-primary{padding-left:12px;padding-right:12px}.tc-forecast_required .tc-hand{padding-top:16px;padding-bottom:12px;min-height:144px}.tc-forecast_required .tc-decision{padding-top:8px}.tc-forecast_required .tc-decision h2{font-size:1.35rem}}
 @media(prefers-reduced-motion:reduce){.tc-table.collecting .tc-played-card{animation:none}}
 /* Crowded phone tables keep player names, the winner mark and caption separate. */
+/* Phone refinement: keep the whole hand visible without shrinking cards into a fan. */
+@media(max-width:600px){
+  .tc-hand{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));justify-items:center;align-content:start;gap:12px 8px;overflow:visible;min-height:0;padding:18px 0 20px}
+  .tc .tc-hand-card{width:100%;min-width:0;max-width:82px;flex-shrink:1;margin:0!important}
+  .tc .tc-hand-card>.tc-card{width:100%;height:clamp(96px,31vw,120px)}
+  .tc-hand-card .tc-card-corner b{font-size:1.25rem}
+  .tc-hand-card .tc-card-corner svg{width:14px;height:14px}
+  .tc-hand-card .tc-card-pattern{inset:25px 7px 18px 25px}
+  .tc-hand-card .tc-card-pattern svg{width:30px;height:22px}
+  .tc-hand-card .tc-card-name{font-size:.5rem}
+  .tc-hand-heading b>span{font-size:.66rem}
+  .tc-player small,.tc-prediction small{font-size:.62rem!important}
+}
 .tc-played-card.winner .tc-card{transform:none}
 @media(max-width:600px){.tc .tc-player{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 12px;gap:4px 8px}.tc .tc-player>div{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;gap:8px}.tc .tc-player>div>b{max-width:100%;font-size:.76rem}.tc .tc-player>div>small{font-size:.52rem;white-space:nowrap}.tc .tc-player>strong{display:flex;gap:4px;align-items:baseline;font-size:1.15rem}.tc .tc-player>strong>small{font-size:.5rem}.tc .tc-prediction{display:flex;gap:4px;align-items:baseline}.tc .tc-prediction small{font-size:.5rem;white-space:nowrap}.tc .tc-large-table{min-height:390px}.tc .tc-large-table .tc-played{inset:44px 8px 36px;grid-template-rows:repeat(2,140px);gap:12px 16px}.tc .tc-large-table .tc-taken{bottom:4px}.tc-trick_resolution .tc-decision{min-height:44px}.tc-trick_resolution .tc-hand{margin-bottom:0}}

@@ -20,3 +20,49 @@
 .grid-result{position:fixed;inset:0;width:min(850px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;margin:auto;padding:0;border:0;background:#173e43;color:#f7f4e9;box-shadow:0 24px 90px #071f22b3}.grid-result:not([open]){display:none}.grid-result::backdrop{background:#0a2425e8}.grid-result-head{padding:48px 50px 32px;border-bottom:1px solid #6d9892}.grid-result-head small{font-size:.66rem;letter-spacing:.18em;color:#f2b78c;font-weight:800}.grid-result-head h2{font:500 clamp(2.6rem,5vw,5rem)/.98 Fraunces,Georgia,serif;letter-spacing:-.04em;max-width:650px;margin:25px 0}.grid-result-head p{color:#c0d1c7;margin:0}.grid-result-stats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #6d9892}.grid-result-stats>div{display:grid;gap:10px;padding:22px 25px;border-right:1px solid #6d9892;border-bottom:1px solid #6d9892}.grid-result-stats span{font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:#bdd4ca}.grid-result-stats strong{font:500 1.85rem Fraunces,Georgia,serif}.grid-result-players{padding:27px 50px 15px}.grid-result-players h3{font:500 1.55rem Fraunces,Georgia,serif;margin:0 0 13px}.grid-result-players>div{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #6d9892;font-size:.78rem}.grid-result-players span{color:#d2e0d8}.grid-result-players small{color:#ebb28a;text-align:right}.grid-result-close{display:block;width:calc(100% - 100px);margin:16px 50px 38px;border:0;background:#c36945;color:#fff9ed;padding:15px 20px;text-align:left;font-weight:800}
 @media(max-width:680px){.grid-result-head{padding:29px 23px}.grid-result-head h2{font-size:2.65rem}.grid-result-stats{grid-template-columns:repeat(2,1fr)}.grid-result-stats>div{padding:15px 18px}.grid-result-stats strong{font-size:1.5rem}.grid-result-players{padding:23px 20px 10px}.grid-result-players>div{grid-template-columns:1fr auto}.grid-result-players small{grid-column:1/-1;text-align:left}.grid-result-close{width:calc(100% - 40px);margin:14px 20px 25px}}
 @media(max-width:680px){.grid-game:is(.phase-debt-resolution,.phase-auction,.phase-purchase-decision) .grid-panel{order:-1}}
+
+/* City table refinement: preserve the circuit, give the next move and join state a clear lane. */
+.grid-lobby-readiness{margin:10px 0 14px;padding:10px 0;border-top:1px solid #aebeb2;border-bottom:1px solid #aebeb2;color:#284f52;font-size:.84rem;line-height:1.45;font-weight:700}
+.grid-lobby-bottom aside .grid-primary,.grid-lobby-bottom aside .grid-secondary{min-height:48px}
+.grid-lobby-bottom aside .grid-primary:focus-visible,.grid-lobby-bottom aside .grid-secondary:focus-visible{outline:3px solid #ad5e34;outline-offset:3px}
+.grid-seat-list>div{min-width:0}
+.grid-seat-list strong{min-width:0;overflow-wrap:anywhere}
+.grid-panel nav{flex-wrap:wrap;overflow:visible}
+.grid-panel nav button{flex:1 1 25%;min-width:70px;min-height:44px;padding:10px 6px}
+.grid-panel nav button.on{background:#e9eee5;box-shadow:inset 0 -3px var(--grid-accent)}
+.grid-selected{min-width:0}
+.grid-selected p{overflow-wrap:anywhere}
+.grid-board:focus-within{outline:2px solid #315f60;outline-offset:3px}
+.grid-field select,.grid-auction input,.grid-trade-sides input{min-height:44px}
+.grid-asset-option{min-height:44px;align-items:center}
+.grid-asset-option input{width:20px!important;height:20px;margin-inline-end:7px}
+@media(max-width:680px){
+  .grid-panel nav{position:relative;top:auto}
+  .grid-panel nav button{flex:1 1 25%;min-width:70px;min-height:46px;font-size:.73rem}
+  .grid-lobby-bottom aside{margin-top:8px;border-top:3px solid #ba6543;padding-top:16px}
+  .grid-lobby-readiness{font-size:.9rem;margin:0 0 12px;padding:12px 0}
+  .grid-lobby-bottom aside .grid-primary,.grid-lobby-bottom aside .grid-secondary{width:100%;min-height:50px}
+  .grid-seat-list>div{min-height:56px}
+  .grid-seat-list small{justify-self:end;text-align:end}
+  .grid-invitation>div{flex:1;min-width:0}
+  .grid-invitation strong{display:block;line-height:1.4}
+  .grid-trade-sides{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .grid-asset-option span{overflow-wrap:anywhere}
+}
+@media(max-width:390px){
+  .grid-map-column{display:flex;flex-direction:column}
+  .grid-map-top{order:-1}
+  .grid-selected{order:0;background:#f7f5ec}
+  .grid-map-scroll{order:1;max-width:100vw;max-height:430px;border-block:1px solid #91aaa2}
+  .grid-board{min-width:560px;grid-template-columns:repeat(8,minmax(70px,1fr));grid-template-rows:repeat(8,minmax(70px,1fr));margin-inline:10px}
+  .grid-space strong{font-size:.61rem;line-height:1.13}
+  .grid-space small{font-size:.57rem}
+  .grid-selected{grid-template-columns:minmax(0,1fr) 42px;gap:8px}
+  .grid-selected strong{overflow-wrap:anywhere}
+  .grid-selected>button{min-width:44px;min-height:44px}
+  .grid-lobby-intro h1{font-size:clamp(2.7rem,13vw,3.2rem)}
+  .grid-lobby-bottom{padding-inline:16px}
+  .grid-seat-list>div{grid-template-columns:28px minmax(0,1fr) auto;gap:7px}
+  .grid-seat-list small{font-size:.67rem}
+  .grid-trade-sides{grid-template-columns:1fr}
+}

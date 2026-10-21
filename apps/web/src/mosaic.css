@@ -17,3 +17,32 @@
 .mx .mx-cell:disabled,.mx .mx-palette:disabled{opacity:1}.mx-ochre{--mx-tile-ink:var(--mx-glaze-ink)}.mx-confirm-bar>.mx-confirm{width:100%}.mx-board-total b{font-family:var(--mx-display);font-size:2rem;font-weight:500;display:block;line-height:1}.mx-board-total small{margin-top:4px}.mx-brief-peek{display:none}
 @media(max-width:760px){.mx-header{padding-top:10px;padding-bottom:10px}.mx-turn-strip{padding-top:10px;padding-bottom:10px}.mx-board-heading{margin-top:12px;margin-bottom:8px}.mx-board-total b{font-size:1.6rem}.mx-confirm-bar{position:sticky;bottom:8px;z-index:4;background:var(--mx-paper);padding:6px 0}.mx-brief-peek{display:block;border-top:1px solid var(--mx-line);padding:14px 0 16px}.mx-brief-peek>div{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}.mx-brief-peek button{padding:8px 0;border:0;border-bottom:1px solid var(--mx-line);text-align:left;min-width:0}.mx-brief-peek button span{font-size:.73rem;display:block}.mx-brief-peek button b{font-size:.65rem;font-weight:400}.mx-brief-peek small{display:block;font-size:.6rem;color:var(--mx-muted);margin-top:5px}}
 @media(max-width:760px){.mx-board-frame{max-width:310px;width:100%;margin-inline:auto}.mx-confirm-bar{position:static;padding:0}.mx-stage-status{gap:4px 12px}.mx-placing{padding-top:12px}.mx-local-note{margin-top:6px}.mx-picked-tiles{margin-top:0}.mx-help{padding-left:8px}.mx-board-heading h1{font-size:1.7rem}}
+
+/* Studio refinement: make selected commissions and palette marks clear on phones. */
+.mx .mx-commission-actions button[aria-pressed="true"]{color:var(--mx-accent);font-weight:700;border-bottom:2px solid var(--mx-accent)}
+@media(max-width:760px){
+  .mx-palette-tiles .mx-tile{width:35px;height:35px}
+  .mx .mx-palette{min-height:92px}
+  .mx-brief-peek button[aria-pressed="true"]{color:var(--mx-accent);font-weight:700}
+}
+
+/* Studio refinement: give live scoring a clear lead and keep the maker roster readable. */
+@media(max-width:760px){
+  .mx-score-heading{padding:12px 14px;border-left:1px solid var(--mx-accent);background:var(--mx-cell)}
+  .mx-score-heading>strong{font-size:3.6rem}
+  .mx-score-list{margin-top:10px}
+  .mx-score-list>button,.mx-score-list>div{padding:11px 0}
+  .mx-score-explanation{min-height:0;margin:12px 0}
+}
+@media(max-width:380px){
+  .mx-player-strip{grid-template-columns:1fr;gap:4px}
+  .mx-player-strip button{padding:8px 4px;gap:10px}
+  .mx-mini-board{width:42px;height:42px}
+  .mx-lobby-crew{padding-inline:16px}
+  .mx-seat{display:grid;grid-template-columns:30px minmax(0,1fr);gap:3px 10px;padding:12px 0}
+  .mx-seat>span{grid-row:span 2}
+  .mx-seat b{min-width:0;font-size:.9rem}
+  .mx-seat small{grid-column:2}
+  .mx-seat>button{grid-column:2;justify-self:start;margin-top:4px}
+  .mx-lobby-controls{display:grid;grid-template-columns:1fr}
+}
