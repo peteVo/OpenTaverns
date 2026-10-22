@@ -1,5 +1,49 @@
 import { test, expect } from '@playwright/test';
 
+test('home Rules keep readable controls from the entry panel and game shelf', async ({ page }) => {
+  const games = ['hearthlands', 'saigon-grid', 'blackout', 'tidecall', 'werewolf', 'mosaic', 'wildways'];
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    await page.getByPlaceholder('What should friends call you?').fill('Rules reader');
+    for (const game of games) {
+      await page.getByLabel('Choose a game').selectOption(game);
+      for (const trigger of [page.locator('.entry-game-note > button'), page.locator(`.${game === 'hearthlands' ? 'hearth' : game === 'saigon-grid' ? 'grid' : game}-edition > .edition-rules`)]) {
+        await trigger.click();
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible();
+        const contrast = await dialog.locator('nav button, .ot-rules-head button, .ot-rules-top').evaluateAll(buttons => {
+          const luminance = (color: string) => {
+            const rgb = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map(value => {
+              const channel = value / 255;
+              return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+            });
+            return rgb[0]! * .2126 + rgb[1]! * .7152 + rgb[2]! * .0722;
+          };
+          return buttons.map(button => {
+            let surface: Element | null = button;
+            while (surface && getComputedStyle(surface).backgroundColor === 'rgba(0, 0, 0, 0)') surface = surface.parentElement;
+            const foreground = luminance(getComputedStyle(button).color);
+            const background = luminance(getComputedStyle(surface!).backgroundColor);
+            return { text: button.textContent, ratio: (Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05) };
+          });
+        });
+        for (const control of contrast) expect(control.ratio, `${game} ${width}px: ${control.text}`).toBeGreaterThanOrEqual(4.5);
+        const section = dialog.locator('nav button').nth(1);
+        await section.click();
+        await expect(section).toHaveAttribute('aria-current', 'location');
+        if (game === 'blackout' && await trigger.getAttribute('class') !== 'edition-rules') {
+          await page.screenshot({ path: `test-results/home-blackout-rules-${width}.png` });
+        }
+        await dialog.getByRole('button', { name: 'Close rules' }).click();
+        await expect(trigger).toBeFocused();
+        expect(new URL(page.url()).pathname).toBe('/');
+      }
+    }
+    await expect(page.getByPlaceholder('What should friends call you?')).toHaveValue('Rules reader');
+  }
+});
+
 test('phone touch supports invitation joining and Rules focus return', async ({ browser }) => {
   const host = await browser.newContext();
   const friend = await browser.newContext({ viewport: { width: 360, height: 800 }, hasTouch: true, isMobile: true });

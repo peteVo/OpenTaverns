@@ -92,7 +92,7 @@ The shared platform palette pairs warm paper and forest ink with a restrained co
 
 ## Layout
 
-The home page uses a wide two-column welcome and table-entry stage, then a six-column asymmetric game shelf: Hearthlands and Saigon Grid receive wider spans, while Mosaic and Wildways span the shelf; the remaining volumes sit between them. At 760px and below, the stage stacks and the shelf becomes one column. Content uses fluid side padding, with a 1600px platform maximum and 1440px collection maximum.
+The home page uses the original dark green (`#262e29`) welcome and footer with warm light text, followed by a lighter game collection. It keeps the wide two-column welcome and table-entry stage, then a six-column asymmetric game shelf: Hearthlands and Saigon Grid receive wider spans, while Mosaic and Wildways span the shelf; the remaining volumes sit between them. At 760px and below, the stage stacks and the shelf becomes one column. Content uses fluid side padding, with a 1600px platform maximum and 1440px collection maximum. Entry-panel button styles apply only to their direct controls so the nested Rules dialog retains its own readable palette and focus treatment.
 
 The shared spacing steps are 4, 8, 12, 16, 24, 32, and 48px. Game boards may use exact pixel geometry to preserve aligned cells and map positions. On game tables, context and actions sit beside the board on wide screens and flow vertically on phones; board panning stays bounded to the board area.
 

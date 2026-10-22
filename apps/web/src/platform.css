@@ -36,18 +36,18 @@ button, a { touch-action: manipulation; }
 .connection-banner { padding: 14px max(20px,env(safe-area-inset-left)); font-size: .95rem; text-align: center; background: #f4dfb6; color: #49381f; }
 
 /* Collection: the invitation is the first task; each game is a distinct edition. */
-.home { background: var(--ot-paper); color: var(--ot-ink); overflow: visible; min-height: 100svh; }
+.home { background: #262e29; color: #f2eee2; overflow: visible; min-height: 100svh; }
 .home-header, .home-footer { max-width: 1600px; margin-inline: auto; padding-inline: clamp(20px,5vw,80px); }
-.home-header { padding-block: 24px; border-bottom: 1px solid var(--ot-line); gap: 24px; }
+.home-header { padding-block: 24px; border-bottom: 1px solid #667268; gap: 24px; }
 .home-header .brand { font-size: 1.05rem; letter-spacing: .12em; }
 .home-header nav { display: flex; align-items: center; gap: 28px; font-size: .9rem; font-weight: 600; }
 .home-header nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 6px; }
 .home-header nav a:hover { text-decoration-color: currentColor; }
 .home-stage { max-width: 1600px; margin-inline: auto; padding: clamp(40px,6vw,88px) clamp(20px,5vw,80px); min-height: 0; display: grid; grid-template-columns: minmax(0,1.2fr) minmax(320px,.8fr); align-items: center; gap: clamp(40px,6vw,96px); }
 .home-copy { padding: 0; min-width: 0; animation: none; }
-.home-copy h1 { color: var(--ot-ink); font-family: var(--ot-display); font-size: clamp(3.3rem,6.4vw,6rem); line-height: 1.02; letter-spacing: -.04em; margin: 0 0 28px; text-wrap: balance; }
-.home-copy > p { max-width: 38ch; font-size: clamp(1rem,1.3vw,1.15rem); line-height: 1.65; color: var(--ot-muted); }
-.home-explore { display: inline-flex; gap: 32px; align-items: center; padding-block: 12px; margin-top: 12px; border-bottom: 1px solid var(--ot-ink); font-size: .95rem; font-weight: 700; }
+.home-copy h1 { color: inherit; font-family: var(--ot-display); font-size: clamp(3.3rem,6.4vw,6rem); line-height: 1.02; letter-spacing: -.04em; margin: 0 0 28px; text-wrap: balance; }
+.home-copy > p { max-width: 38ch; font-size: clamp(1rem,1.3vw,1.15rem); line-height: 1.65; color: #cfdbcf; }
+.home-explore { display: inline-flex; gap: 32px; align-items: center; padding-block: 12px; margin-top: 12px; border-bottom: 1px solid currentColor; font-size: .95rem; font-weight: 700; }
 .home-explore span { color: var(--ot-copper); font-size: 1.5rem; }
 .home-copy .home-footnote { margin: 40px 0 0; font-size: .875rem; }
 .home .home-entry { display: block; padding: 28px 32px; background: var(--ot-forest); color: #f5f0e4; gap: 0; scroll-margin-block: 24px; }
@@ -59,9 +59,10 @@ button, a { touch-action: manipulation; }
 .home .entry-form input::placeholder { color: #58685b; opacity: 1; }
 .home .entry-form .primary-button { width: 100%; background: #dfb58c; color: #20372c; min-height: 52px; font-size: 1rem; }
 .home .entry-form .primary-button:hover:not(:disabled) { background: #f0cda4; }
-.home .entry-form button:focus-visible, .home .entry-form input:focus-visible, .home .entry-form select:focus-visible { outline-color: #f2c28b; }
+.home-header a:focus-visible, .home-copy a:focus-visible, .home-footer a:focus-visible,
+.home .entry-form > button:focus-visible, .home .entry-form > div > button:focus-visible, .home .entry-form input:focus-visible, .home .entry-form select:focus-visible { outline-color: #f2c28b; }
 .home .entry-game-note { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: .875rem; color: #d5dfd0; }
-.home .entry-game-note button { border: 0; padding: 8px 0 8px 12px; background: none; color: #f5f0e4; min-height: 44px; text-decoration: underline; text-underline-offset: 4px; font-size: .875rem; }
+.home .entry-game-note > button { border: 0; padding: 8px 0 8px 12px; background: none; color: #f5f0e4; min-height: 44px; text-decoration: underline; text-underline-offset: 4px; font-size: .875rem; }
 .home .join-divider { display: flex; gap: 12px; align-items: center; margin-top: 4px; font-size: .875rem; color: #d5dfd0; }
 .home .join-divider::after { content: ''; flex: 1; height: 1px; background: #647b6b; }
 .home .join-row { grid-template-columns: minmax(0,1fr) auto; gap: 10px; }
@@ -71,7 +72,7 @@ button, a { touch-action: manipulation; }
 .home .watch-option { min-height: 44px; font-size: .875rem; color: #d5dfd0; gap: 10px; margin-top: -7px; }
 .home .watch-option input { width: 18px; height: 18px; accent-color: #dfb58c; }
 .home .error { color: #ffd2bc; font-size: .95rem; margin: 0; padding-top: 8px; }
-.home-collection { padding: 56px clamp(20px,5vw,80px) 72px; background: #e4e6da; scroll-margin-top: 20px; }
+.home-collection { padding: 56px clamp(20px,5vw,80px) 72px; background: #e4e6da; color: var(--ot-ink); scroll-margin-top: 20px; }
 .collection-heading { max-width: 1440px; margin: 0 auto 32px; display: flex; align-items: end; justify-content: space-between; gap: 40px; border-top: 1px solid #a8b2a2; padding-top: 24px; }
 .collection-heading h2 { max-width: 18ch; margin: 0; font-size: clamp(2.3rem,4vw,3.6rem); line-height: 1.08; letter-spacing: -.035em; text-wrap: balance; }
 .collection-heading p { color: var(--ot-muted); font-size: .95rem; margin: 0; max-width: 32ch; }
@@ -108,7 +109,7 @@ button, a { touch-action: manipulation; }
 .wildways-volume .volume-title { margin-top: 12px; }
 .wildways-volume .volume-description { max-width: 48ch; }
 .wildways-volume .edition-art { top: 24px; width: 39%; height: 205px; opacity: 1; color: #d8d4aa; }
-.home-footer { padding-block: 24px; background: var(--ot-paper); color: var(--ot-muted); font-size: .875rem; letter-spacing: normal; gap: 24px; }
+.home-footer { padding-block: 24px; background: #262e29; color: #cfdbcf; font-size: .875rem; letter-spacing: normal; gap: 24px; }
 .home-footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 4px; }
 
 /* Hearthlands: a quiet workbench around the illustrated map. */
