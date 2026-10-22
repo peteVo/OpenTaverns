@@ -79,6 +79,7 @@ button, a { touch-action: manipulation; }
 .game-edition { grid-column: span 2; min-width: 0; position: relative; }
 .game-edition.hearth-edition, .game-edition.grid-edition { grid-column: span 3; }
 .game-edition.mosaic-edition { grid-column: span 6; }
+.game-edition.wildways-edition { grid-column: span 6; }
 .game-volume { position: relative; width: 100%; border: 0; border-radius: 2px; min-height: 335px; padding: 28px; text-align: left; display: flex; flex-direction: column; overflow: hidden; background: #365b49; color: #f6f2e6; }
 .game-volume.chosen { outline: 3px solid var(--ot-copper); outline-offset: 4px; }
 .game-volume:hover { background-image: none; }
@@ -103,6 +104,10 @@ button, a { touch-action: manipulation; }
 .mosaic-volume .volume-title { margin-top: 12px; }
 .mosaic-volume .volume-description { max-width: 48ch; }
 .mosaic-volume .edition-art { top: 34px; width: 36%; height: 200px; opacity: 1; }
+.wildways-volume { background: #344d3c; color: #f1eedc; min-height: 270px; padding-right: 42%; }
+.wildways-volume .volume-title { margin-top: 12px; }
+.wildways-volume .volume-description { max-width: 48ch; }
+.wildways-volume .edition-art { top: 24px; width: 39%; height: 205px; opacity: 1; color: #d8d4aa; }
 .home-footer { padding-block: 24px; background: var(--ot-paper); color: var(--ot-muted); font-size: .875rem; letter-spacing: normal; gap: 24px; }
 .home-footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 4px; }
 
@@ -174,7 +179,7 @@ button, a { touch-action: manipulation; }
   .collection-heading h2 { font-size: clamp(2.2rem,7vw,3rem); margin-bottom: 16px; max-width: 20ch; }
   .collection-heading p { font-size: .95rem; }
   .game-shelf { display: grid; grid-template-columns: minmax(0,1fr); gap: 24px; }
-  .game-edition, .game-edition.hearth-edition, .game-edition.grid-edition, .game-edition.mosaic-edition { grid-column: auto; }
+  .game-edition, .game-edition.hearth-edition, .game-edition.grid-edition, .game-edition.mosaic-edition, .game-edition.wildways-edition { grid-column: auto; }
   .game-volume { min-height: 310px; padding: 24px; }
   .edition-art { width: 190px; height: 125px; right: 12px; top: 14px; }
   .volume-title { margin-top: 125px; font-size: 2.5rem; }
@@ -182,6 +187,9 @@ button, a { touch-action: manipulation; }
   .mosaic-volume { padding: 24px; }
   .mosaic-volume .volume-title { margin-top: 125px; }
   .mosaic-volume .edition-art { width: 175px; height: 125px; top: 10px; }
+  .wildways-volume { padding: 24px; }
+  .wildways-volume .volume-title { margin-top: 125px; }
+  .wildways-volume .edition-art { width: 175px; height: 135px; top: 6px; }
   .home-footer { padding: 20px; flex-wrap: wrap; gap: 8px 24px; }
   .game-header { flex-wrap: wrap; padding: 14px 16px; gap: 10px; }
   .game-header .brand { font-size: .8rem; }

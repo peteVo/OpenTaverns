@@ -20,7 +20,7 @@ Each room's accepted actions are handled serially by the single server process. 
 
 ## Boundaries
 
-The room server knows codes, seats, host privilege, spectators, cookie sessions, connections, and one selected game ID. Hearthlands owns Regions, Materials, private hands, and Renown. Saigon Grid owns its city circuit, Holdings, Credits, auctions, trades, and obligations. Blackout owns factions, professions, Incidents, concurrent Work Orders, Stability, Crisis, Insight, and Audits. Each browser renders a projected snapshot and submits a typed action to the selected game's headless `applyAction` engine. Rejected actions leave the original state unchanged.
+The room server knows codes, seats, host privilege, spectators, cookie sessions, connections, and one selected game ID. Hearthlands owns Regions, Materials, private hands, and Renown. Saigon Grid owns its city circuit, Holdings, Credits, auctions, trades, and obligations. Blackout owns factions, professions, Incidents, concurrent Work Orders, Stability, Crisis, Insight, and Audits. Wildways owns its shared landscape, market, influence markers, network control, Milestones and scoring. Each browser renders a projected snapshot and submits a typed action to the selected game's headless `applyAction` engine. Rejected actions leave the original state unchanged.
 
 Room actions are processed sequentially on one Node event loop. This makes trade acceptance atomic for one server instance. Client-supplied IDs select an existing game object or recipient; they never supply random results or authoritative balances.
 
@@ -48,7 +48,7 @@ Tidecall reuses room pacing, disconnect grace and bot takeover. The server advan
 
 Host-controlled rematch keeps the existing Table, current host, seats, cookies and spectators. It requires connected human seats or explicit bot replacement and resets only the selected game. Accepted action IDs remain registered and a new match ID prevents cross-match replay. Production uses a fresh seed. The platform still uses small explicit dispatch branches rather than a universal card-game framework.
 
-All six game modules supply structured content to the same Rules sheet. Game renderers are loaded as separate client chunks and use the existing React/CSS/SVG stack. No new runtime dependency is required.
+All seven game modules supply structured content to the same Rules sheet. Game renderers are loaded as separate client chunks and use the existing React/CSS/SVG stack. No new runtime dependency is required.
 
 ## Adding a game
 
@@ -66,6 +66,16 @@ Mosaic owns its conserved hundred-tile pool, five two-tile market slots, connect
 
 The platform reuses cookie sessions, UUID retries, current-tab control, deadlines/grace, populated-seat takeover, atomic saves, shared Rules and fresh-match lifecycle. A shared small player-count table replaces repeated bound expressions. A lazy game chunk supplies DOM/SVG ceramics and responsive score inspection. See [Mosaic engine](mosaic-engine.md).
 
+## Wildways: a shared landscape and changing control
+
+Wildways owns a seeded supply of 72 tiles, a three-offer public market and a shared orthogonal map. Each player places one tile per turn. Same-habitat neighbors form a region; Trail or Stream tiles connect only when matching ports face across an edge. A placed tile can receive one of its owner's eight permanent Survey Markers, for its habitat or route, or the marker can be saved. Merged components combine influence, so control and projected network scores are recalculated from the map after each move.
+
+Habitat regions of three or more tiles score 2 per tile and 3 per landmark. Route networks of three or more score 3 per tile and 2 per landmark. Unique control awards the full value; a tie splits it evenly and rounds each award down. One seeded Habitat Milestone and one Network Milestone are selected per match. Only the active player is checked after their turn; a qualifying first claim earns permanent 8 or 10 point value. Match lengths are configured per player count: 18 turns each at two seats, 15 at three, 13 at four and 12 at five. Standings compare total score, Milestones claimed, and uniquely controlled scoring networks; any remaining tie is shared.
+
+The `PLACING` and `GAME_OVER` phases are authoritative. The browser stages tile, rotation, coordinate and optional marker choices locally and can preview resulting control, scores and Milestone claims through the pure `previewTurn` function. It commits one `PLACE_LANDSCAPE_TILE` action containing round, turn, revision, offer and tile IDs, coordinate, orientation and marker mode. The server validates the strict action schema, match ID, revision and engine legality before saving. On deadline, the server calls the engine's system-only `TIMEOUT`; its deterministic fallback uses the first market offer, first legal coordinate, zero rotation and no marker.
+
+All players and spectators receive the same public projection: board, remaining offer data, markers, influence, control, score, Milestones and history. The tile bag order, random state and action log remain server-side. The interface uses the `.wy` root, `.wy-dark` theme and `--w-*` tokens for its nature-atlas palette and controls. Its lazy renderer provides a panning/zooming map, rotation and legal-placement controls, network inspection, local scoring preview, responsive score rails, light/dark theme and English/German/Vietnamese text. See [Wildways engine and rules](wildways-engine.md).
+
 ## Verified scope and limitations
 
-The components above are implemented in the repository. Named scenario routes are development-only; they are not production game content. Persistence is a local single-writer JSON store, not a distributed database. Rooms and live sockets are process-local, so the current server must run as one instance. Client-side preview state (for example, Mosaic placement staging) is distinct from accepted server state. E2E tests use Playwright configured for the installed Microsoft Edge browser channel.
+The components above are implemented in the repository. Named scenario routes are development-only; they are not production game content. Persistence is a local single-writer JSON store, not a distributed database. Rooms and live sockets are process-local, so the current server must run as one instance. Client-side preview state (for example, Mosaic or Wildways placement staging) is distinct from accepted server state. E2E tests use Playwright configured for the installed Microsoft Edge browser channel.

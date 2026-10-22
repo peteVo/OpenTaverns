@@ -1,6 +1,6 @@
 # OpenTaverns
 
-OpenTaverns is a browser-based multiplayer game table for friends. It currently includes six games: **Hearthlands** (3–6 players), an illustrated frontier strategy game; **Saigon Grid** (2–6), a city game about auctions, development, negotiation, and debt; **Blackout** (5–10), hidden-role infrastructure crisis; **Tidecall** (3–6), prediction and trick-taking with private hands; **Werewolf** (8–18), a digital adaptation of *The Werewolves of Miller’s Hollow Classic* with an automatic moderator and optional Defender/Village Idiot roles; and **Mosaic** (2–4), original ceramic tile drafting and composition. Players create or join a table by code, invitation link, or QR code and choose a display name. No account is needed.
+OpenTaverns is a browser-based multiplayer game table for friends. It includes seven games: **Hearthlands** (3–6 players), an illustrated frontier strategy game; **Saigon Grid** (2–6), a city game about auctions, development, negotiation, and debt; **Blackout** (5–10), hidden-role infrastructure crisis; **Tidecall** (3–6), prediction and trick-taking with private hands; **Werewolf** (8–18), a digital adaptation of *The Werewolves of Miller’s Hollow Classic* with an automatic moderator and optional Defender/Village Idiot roles; **Mosaic** (2–4), original ceramic tile drafting and composition; and **Wildways** (2–5), a shared landscape game about habitats, route networks, influence and public milestones. Players create or join a table by code, invitation link, or QR code and choose a display name. No account is needed.
 
 The application uses React, TypeScript, Vite, and a Node.js/WebSocket server. Each game has a separate rules engine; the server validates actions and sends each player only the state they are allowed to see. Tables are saved locally so a single server can restore them after restart.
 
@@ -28,6 +28,10 @@ The application uses React, TypeScript, Vite, and a Node.js/WebSocket server. Ea
 
 [See Mosaic’s phone preview](docs/images/qa/mosaic-preview-mobile-final.png), [dark studio](docs/images/qa/mosaic-dark-mobile-final.png), and [engine guide](docs/mosaic-engine.md).
 
+![Wildways landscape atlas on desktop](docs/images/wildways/landscape-desktop.png)
+
+[See Wildways' phone preview](docs/images/wildways/phone-preview.png), [release validation](docs/wildways-release-validation.md), and [simulation results](docs/WILDWAYS_SIMULATION.md).
+
 ## Start locally
 
 Requirements: Node.js 20.19+ or 22.12+ and npm (the installed Vite version's supported Node range).
@@ -54,7 +58,7 @@ Open `http://localhost:3000`. The server serves the built client and WebSockets 
 
 ## Saved tables and host management
 
-All six games save tables automatically to `data/` after every accepted action and room change, before sending the new state. Restart with the same data directory and players can reopen their original links using the same browser cookies. Private hands, roles, locked choices, scores, bots and retry IDs are retained. Human seats begin Away; timed matches pause until the first seated player reconnects, with at least 30 seconds to resume.
+All seven games save tables automatically to `data/` after every accepted action and room change, before sending the new state. Restart with the same data directory and players can reopen their original links using the same browser cookies. Private hands, roles, locked choices, scores, bots and retry IDs are retained. Human seats begin Away; timed matches pause until the first seated player reconnects, with at least 30 seconds to resume.
 
 The server prints a **private Host management link** at startup. Open it to list all saved tables, reopen invitations and permanently delete tables. The collection footer also links to **Host register** at `/manage`; it requires the key from the private link. A deletion confirmation identifies the table and connected players. Deleting closes connected clients and removes the saved snapshot.
 
@@ -85,6 +89,7 @@ Run `npm run dev` on the host computer. Open `http://HOST_IP:5173` from devices 
 | `npm run simulate -- --game tidecall --games 1000 --players 4` | Tidecall simulations, 3–6 seats; privacy, scoring and Tide metrics |
 | `npm run simulate -- --game werewolf --games 1000 --players 12` | Classic Werewolf bot simulation, 8–18 seats; add `--ruleset CLASSIC_PLUS` for Defender/Idiot |
 | `npm run simulate -- --game mosaic --games 1000 --players 4` | Mosaic complete-match simulations and pattern/Commission metrics, 2–4 seats |
+| `npm run simulate -- --game wildways --games 100 --players 4` | Wildways complete-match scoring and network diagnostics, 2–5 seats |
 | `node scripts/tidecall-scoring.mjs` | Compare Tidecall scoring candidates and unconditional zero strategy |
 
 The browser suite is configured for Microsoft Edge (`channel: 'msedge'`) and requires Edge installed on the computer. Development-only scenario tests can be selected with `npm run test:e2e -- --development`; those fixtures are not exposed by production servers.
@@ -96,6 +101,7 @@ The browser suite is configured for Microsoft Edge (`channel: 'msedge'`) and req
 - [Current status](docs/CURRENT_STATUS.md) — implemented state, limitations, and next checks.
 - [Decision log](docs/DECISIONS.md) — decisions supported by the source, with certainty stated.
 - [Network protocol](docs/network-protocol.md), [security model](docs/security.md), and [table storage](docs/table-storage.md).
+- [Wildways rules and engine](docs/wildways-engine.md) — landscape placement, influence, scoring, milestones, privacy, and server actions.
 
 ## How Hearthlands works
 
@@ -124,7 +130,7 @@ Players travel a 28-stop metropolitan circuit, buy real Ho Chi Minh City street 
 
 Every player has a secret faction and an unrelated public profession. Most are Operators; a minority are Disruptors who know one another. Each Incident opens two Work Orders. The rotating Shift Lead assigns separate teams, and assigned players privately lock Stabilize, Diagnose, or, for Disruptors, Interfere. Diagnose sacrifices progress for shared Insight, so a failed order is not proof of sabotage. Two Insight can fund a private simultaneous Audit vote; an Audit reveals the number of Interfere actions on one order, never the actor.
 
-The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all six games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
+The four systems have public Stability from 0 to 5. Failed orders lower Stability and raise Crisis. Disruptors win at Crisis 5 or when two systems are Offline after resolution. Operators win by surviving eight rounds. Nobody is eliminated early. After the match, a complete round-by-round truth view reveals factions, assignments, actions, abilities, and Audit results. The in-game **Rules** button is available in all seven games without leaving the table. See [Blackout's engine and privacy guide](docs/blackout-engine.md).
 
 ## How Tidecall works
 
@@ -144,6 +150,14 @@ Choose one of five persistent two-tile Palettes. Preview both tiles, placing in 
 
 The phone interface supports tap placement, order changes, editing, Undo, local preview recovery, exact score highlights and opponent inspection. Rules preserve the preview. Light and dark studio treatments keep distinct family marks readable. Server sessions, restart recovery, spectators, bots and Play Again use the same Table. Future bag order stays private. See [exact rules and privacy](docs/mosaic-engine.md), [simulation diagnostics](docs/mosaic-simulation.json) and [visual QA](docs/mosaic-visual-audit.md).
 
+## How Wildways works
+
+Wildways uses a shared square map of Forest, Meadow and Highland tiles. On each turn, choose one of three public offers, rotate it and place it orthogonally beside the existing landscape. Same-habitat tiles form regions. Trails and Streams form separate networks only when matching route ports face across an edge. You may place one of your eight permanent Survey Markers on the tile just placed, to influence its habitat or its route; you can also save the marker. Control updates whenever the map connects or merges components, so projected network scores can change during play.
+
+Habitat regions of at least three tiles are worth two points per tile and three per landmark. Trail and Stream networks of at least three route tiles are worth three points per tile and two per landmark. A unique leader receives the full value; tied leaders split it evenly, rounding down. Two seeded public Milestones, one for a habitat and one for a network, award lasting points to the active player who first meets each condition. Matches last 18 turns per player with two seats, 15 with three, 13 with four, and 12 with five. The highest score wins; ties compare Milestones claimed and then uniquely controlled scoring networks, with any remaining tie shared.
+
+The map, market, influence, control, scores, Milestones and turn history are public; the future tile supply and random state stay on the server. The responsive atlas interface supports map panning and zoom, tile rotation, legal-placement previews, marker selection, network inspection, light and dark themes, and English, German or Vietnamese. Server sessions, timed turns, spectators, bots, reconnects, saved tables and rematches use the shared Table. See the [Wildways rules, engine and privacy guide](docs/wildways-engine.md).
+
 ## Architecture
 
 - `packages/hearthlands`: deterministic, headless TypeScript rules, topology, projections, replay, invariants, tests, and bots that act from their own projected view.
@@ -152,11 +166,12 @@ The phone interface supports tap placement, order changes, editing, Undo, local 
 - `packages/tidecall`: deterministic card rules, eight Tides, private hands and simultaneous locks, scoring, replay, bots, invariants and scenarios.
 - `packages/werewolf`: Classic and two verified expansion characters, private scheduler, queued death reactions, projections, replay, bots and scenarios.
 - `packages/mosaic`: deterministic paired drafting, connected placement, pure patterns/Commissions, supply invariants, public projections, bots, replay and scenarios.
+- `packages/wildways`: deterministic landscape tile supply, habitat/route networks, influence control, scoring, public Milestones, projections, bots and scenarios.
 - `apps/server`: shared room and session management, runtime message validation, game dispatch, authoritative actions, WebSocket state delivery, and static hosting.
-- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all six games. The client proposes actions; it never decides their validity. Game renderers load on demand.
+- `apps/web`: collection, shared table and Rules flows, and separate React renderers for all seven games. The client proposes actions; it never decides their validity. Game renderers load on demand.
 - `tests/e2e`: multi-browser create/join, a complete six-seat match through victory, refresh and disconnect recovery, host transfer, trade races, security checks, and desktop/mobile screenshots.
 
-The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All six rule states serialize as JSON and are stored in atomic room snapshots without changing the rules packages.
+The server sends Hearthlands inventory and unrevealed Chronicle Cards only to their owner. Saigon Grid portfolios and its ledger are public; its random state and event decks stay server-side. Blackout sends each player only their own faction, allies if Disruptor, and locked response. Live spectators see public assignments and outcomes without factions or action choices. Blackout's private votes remain hidden until all required votes arrive or the window expires. Its validated action log reconstructs a match. All seven rule states serialize as JSON and are stored in atomic room snapshots without changing the rules packages.
 
 See [architecture](docs/ARCHITECTURE.md), [network protocol](docs/network-protocol.md), and [security](docs/security.md).
 
@@ -174,4 +189,4 @@ Do not scale this version to multiple instances: rooms are process-local, and a 
 
 ## Current limits and next steps
 
-Tables survive process restarts using their saved data directory. Deployment replacements require a persistent disk/volume. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. Multi-instance public hosting still requires shared storage and coordinated actions. The six rules packages remain separate from room/session code.
+Tables survive process restarts using their saved data directory. Deployment replacements require a persistent disk/volume. Offline play and sound are not included. Blackout has a post-game truth timeline and replayable engine log, but no interactive live replay viewer. Multi-instance public hosting still requires shared storage and coordinated actions. The seven rules packages remain separate from room/session code.

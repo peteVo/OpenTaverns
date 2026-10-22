@@ -1,6 +1,6 @@
 # Agent guide
 
-OpenTaverns is a browser-based multiplayer table for six games. Preserve the existing platform and game boundaries; do not create a second app or replace a completed game while adding another.
+OpenTaverns is a browser-based multiplayer table for seven games. Preserve the existing platform and game boundaries; do not create a second app or replace a completed game while adding another.
 
 ## Read first
 
@@ -32,6 +32,7 @@ npm run lint
 npm run build
 npm run test:e2e
 npm run simulate -- --game mosaic --games 100 --players 4
+npm run simulate -- --game wildways --games 100 --players 4
 ```
 
 `npm run dev` starts the API/WebSocket server on port 3000 and Vite on port 5173. E2E uses installed Microsoft Edge. Development scenario checks are opt-in with `npm run test:e2e -- --development`.
@@ -41,7 +42,7 @@ npm run simulate -- --game mosaic --games 100 --players 4
 - Keep game rules in that game's headless package. Treat the server as authoritative; validate every client intention at the server boundary.
 - Preserve explicit per-viewer projections. Never send hidden cards, roles, choices, random state, credentials, or private notes to unauthorized clients and rely on CSS to conceal them.
 - Follow existing validation, idempotency, revisions, latest-tab, reconnect, bot-takeover, serialization, and invariant patterns.
-- Keep the six games working. Update package/workspace exports, server dispatch, UI registration, Rules, tests, simulations, and docs when a real change crosses those boundaries.
+- Keep all seven games working. Update package/workspace exports, server dispatch, UI registration, Rules, tests, simulations, and docs when a real change crosses those boundaries.
 - Keep dependencies small. Use the project's existing React/CSS/SVG and Node/TypeScript conventions.
 - For interface work, inspect rendered desktop and narrow/mobile states, correct concrete visual problems, and report any unverified hardware/accessibility checks.
 

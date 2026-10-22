@@ -1,6 +1,6 @@
 ---
 name: OpenTaverns
-description: A shared online table for six games, framed by a quiet editorial platform.
+description: A shared online table for seven games, framed by a quiet editorial platform.
 colors:
   paper: "#f3f0e7"
   surface: "#fbf9f2"
@@ -50,15 +50,15 @@ components:
 
 ## Overview
 
-**Creative North Star: “A shared table, with six distinct game worlds.”**
+**Creative North Star: “A shared table, with seven distinct game worlds.”**
 
-OpenTaverns is a contemporary place for friends to open a shared table. The platform gives the collection a calm, editorial frame; each game remains the main visual object and keeps its own palette and board language. The home page now puts the practical task first: choose a game, create a table, or join with an invitation, followed by an asymmetric shelf that previews all six games.
+OpenTaverns is a contemporary place for friends to open a shared table. The platform gives the collection a calm, editorial frame; each game remains the main visual object and keeps its own palette and board language. The home page puts the practical task first: choose a game, create a table, or join with an invitation, followed by an asymmetric shelf that previews all seven games.
 
-Fraunces brings a bookish display voice, while DM Sans keeps instructions and controls direct. The shared interface uses warm paper, forest ink, flat controls, and clear focus states. Game-specific themes remain local to each game. English is the current interface language; long names and proper-name diacritics should remain legible, but no localization system is implemented.
+Fraunces brings a bookish display voice, while DM Sans keeps instructions and controls direct. The shared interface uses warm paper, forest ink, flat controls, and clear focus states. Game-specific themes remain local to each game. The shared platform stays in English; Wildways provides its own English, German and Vietnamese rules and table controls. Long names and proper-name diacritics should remain legible.
 
 **Key Characteristics:**
-- Task-first table entry, then an asymmetric six-volume collection shelf.
-- One typography pairing and shared control language across six separate game identities.
+- Task-first table entry, then an asymmetric seven-volume collection shelf.
+- One typography pairing and shared control language across seven separate game identities.
 - Game boards and game-specific color systems stay visually distinct.
 
 ## Colors
@@ -92,7 +92,7 @@ The shared platform palette pairs warm paper and forest ink with a restrained co
 
 ## Layout
 
-The home page uses a wide two-column welcome and table-entry stage, then a six-column asymmetric game shelf: Hearthlands and Saigon Grid receive wider spans, while Mosaic spans the shelf; the remaining volumes sit between them. At 760px and below, the stage stacks and the shelf becomes one column. Content uses fluid side padding, with a 1600px platform maximum and 1440px collection maximum.
+The home page uses a wide two-column welcome and table-entry stage, then a six-column asymmetric game shelf: Hearthlands and Saigon Grid receive wider spans, while Mosaic and Wildways span the shelf; the remaining volumes sit between them. At 760px and below, the stage stacks and the shelf becomes one column. Content uses fluid side padding, with a 1600px platform maximum and 1440px collection maximum.
 
 The shared spacing steps are 4, 8, 12, 16, 24, 32, and 48px. Game boards may use exact pixel geometry to preserve aligned cells and map positions. On game tables, context and actions sit beside the board on wide screens and flow vertically on phones; board panning stays bounded to the board area.
 
@@ -112,7 +112,7 @@ Platform controls and collection volumes use nearly square corners (2px); Tideca
 - **Fields:** Warm light surface, dark text, near-square border, and clear label. Preserve legible placeholders and visible focus.
 
 ### Home collection volumes
-Each volume previews its own game grammar and palette before a table is opened. Keep selection explicit and provide a separate “How to play” entry for every game. The collection is asymmetric rather than six matching feature cards.
+Each volume previews its own game grammar and palette before a table is opened. Keep selection explicit and provide a separate “How to play” entry for every game. The collection is asymmetric rather than seven matching feature cards.
 
 ### Rules document
 Rules open in a native `<dialog>` as a full reading surface with section navigation, quick rules, and game-specific accent colors. On narrow screens the section navigation becomes a horizontal strip and the rules text remains in a vertically scrolling document.
@@ -120,13 +120,14 @@ Rules open in a native `<dialog>` as a full reading surface with section navigat
 ### Invitation copy
 Invitation UI offers a copyable link and QR code where the invitation surface supports both. If clipboard access is unavailable, provide a selectable text field fallback and a readable status message.
 
-### Six game identities
+### Seven game identities
 - **Hearthlands:** Illustrated landscape and tactile routes; mineral ground, terrain greens, ochre, and clay. The 19-region map and construction/material actions define its table.
 - **Saigon Grid:** Metropolitan cartography and a street circuit; blue-green transit ink, civic cream, and rust. A 28-stop circuit frames public portfolios and district context.
 - **Blackout:** Civic night-shift schematic with public system nodes and discrete private role/action controls.
 - **Tidecall:** Printed navigation table with ivory paper, sea contours, copper accents, original SVG suits, and clear card corners. The table and private hand carry the composition.
 - **Werewolf:** Stable village circle with original line-drawn houses and quiet character silhouettes; warm limewash/olive by day and slate-indigo/candle cream at night. Keep private roles private until a permitted reveal.
 - **Mosaic:** Intimate ceramic studio centered on the personal 5×5 composition; paired Palettes and a narrow score/Gallery rail. Tile families use original marks and hatching as well as color.
+- **Wildways:** Nature atlas of a growing shared map. Forest, Meadow and Highland tiles use distinct silhouettes and textures; Trail and Stream ports have separate patterns. Player sigils and marker shapes accompany color so connected networks and changing control remain legible. The `.wy` renderer owns its light/dark nature palette, `.wy-dark` theme and `--w-*` tokens; localized English, German and Vietnamese rules and table controls stay inside the game surface.
 
 ## Do's and Don'ts
 
@@ -138,7 +139,7 @@ Invitation UI offers a copyable link and QR code where the invitation surface su
 - **Do** ensure long names and Vietnamese diacritics render cleanly in the chosen fonts.
 
 ### Don't:
-- **Don't** flatten the six games into a single palette or matching-card collection.
+- **Don't** flatten the seven games into a single palette or matching-card collection.
 - **Don't** use fake wood, parchment, neon, casino styling, gradients, or glass containers in the shared platform.
 - **Don't** hide roles, choices, or status distinctions behind color alone.
 - **Don't** use ambient floating or glow; motion should respond to interface state and respect reduced-motion settings.

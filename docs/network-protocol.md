@@ -10,8 +10,8 @@ All HTTP and WebSocket traffic uses one origin. The server issues a random 256-b
 | `POST` | `/api/tables/:code/join` | Claim or restore a seat, or enter as spectator |
 | `GET` | `/api/tables/:code` | Current projected room for this session |
 | `POST` | `/api/tables/:code/bots` | Host adds a bot or replaces an Away seat during play |
-| `POST` | `/api/tables/:code/start` | Host starts Hearthlands/Tidecall with 3–6, Saigon Grid with 2–6, Blackout with 5–10, Werewolf with 8–18, or Mosaic with 2–4 connected seats |
-| `POST` | `/api/tables/:code/rematch` | Host starts a fresh finished Tidecall, Werewolf or Mosaic match in the same Table |
+| `POST` | `/api/tables/:code/start` | Host starts Hearthlands/Tidecall with 3–6, Saigon Grid with 2–6, Blackout with 5–10, Werewolf with 8–18, Mosaic with 2–4, or Wildways with 2–5 connected seats |
+| `POST` | `/api/tables/:code/rematch` | Host starts a fresh finished Tidecall, Werewolf, Mosaic or Wildways match in the same Table |
 | `GET` | `/health` | Liveness |
 
 Creation has `{ "name": "Minh", "gameId": "saigon-grid" }`; join has `{ "name": "Linh", "spectator": false }`. A room view includes code, invitation URL, game ID, host ID, self ID or null, spectator flag, seat connection states, and that game's projection when started. Eliminated Saigon Grid players receive the spectator projection. A room code is not an authentication secret; the cookie is the seat credential.
@@ -53,3 +53,13 @@ Development-only `POST /api/debug/tables/:code/advance` advances a Werewolf cloc
 ## Mosaic additions
 
 Create with `gameId: "mosaic"` and optional table pacing. Start requires 2–4 connected seats. Client `DRAFT_AND_PLACE` carries round, global turn, revision, offer ID and exactly two `{tile,row,col}` placements. The message adds match identity, UUID and expected revision. Strict schemas reject extra actor/score/outcome/refill fields. Offer identities change after refill; stale moves fail atomically. Public state includes boards, scores, market, Commissions and history, never bag order/seed/RNG. On timeout the server uses a deterministic complete legal turn. Restart retains transactions and retry IDs; rematch resets game secrets and match identity within the same Table.
+
+## Wildways additions
+
+Create with `gameId: "wildways"` and optional `pacing: "RELAXED" | "STANDARD" | "FAST"`. Start requires 2–5 connected seats. `POST /api/tables/:code/rematch` is host-only and requires a finished match plus connected human seats or explicit bot replacements. The same Table, seats and spectators remain; production uses a fresh seed and every rematch gets a new `matchId`.
+
+The public projection contains the shared board, three-offer market, player marker counts, marker ownership, components, influence and leaders, calculated scores, two public Milestones and placement history. It omits the future bag order, RNG state and action log. Players and spectators receive the same game projection.
+
+Client action `PLACE_LANDSCAPE_TILE` carries exactly `round`, `turn`, `revision`, `offer`, `tile`, `x`, `y`, `orientation` and `marker`, plus `type`. The room message adds a UUID action ID, `matchId` and `expectedRevision`. The Zod schema is strict; the engine checks active seat, current round/turn/revision, offer/tile identity, empty orthogonally adjacent location, marker availability and marker/tile compatibility. Client-supplied ownership, board, score, Milestone claims, tile properties, market refill and RNG fields are rejected. Action UUID retries are acknowledged without applying twice, and messages from previous matches are rejected.
+
+Server-only `TIMEOUT` is rejected from client actions. At deadline the server applies the engine's deterministic fallback through `@system`; deadlines are 300/180/60 seconds for Relaxed/Standard/Fast, with one 30-second disconnect grace extension. The latest-tab rule applies. An Away player may be replaced by a bot while preserving that seat, and durable table saves retain action IDs and game state. The development advance route can trigger a Wildways timeout only with the local admin key. See [Wildways rules and engine](wildways-engine.md).

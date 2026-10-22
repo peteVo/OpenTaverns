@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './manage.css';
 
 type Table = { code: string; gameId: string; host: string; seats: number; connected: number; bots: number; spectators: number; phase: string; created: number; paused: boolean };
-const games: Record<string, string> = { hearthlands: 'Hearthlands', 'saigon-grid': 'Saigon Grid', blackout: 'Blackout', tidecall: 'Tidecall', werewolf: 'Werewolf', mosaic: 'Mosaic' };
+const games: Record<string, string> = { hearthlands: 'Hearthlands', 'saigon-grid': 'Saigon Grid', blackout: 'Blackout', tidecall: 'Tidecall', werewolf: 'Werewolf', mosaic: 'Mosaic', wildways: 'Wildways' };
 
 async function request<T>(path: string, method = 'GET', body?: object): Promise<T> {
   const response = await fetch(`/api/admin/${path}`, { method, headers: { 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });

@@ -1,0 +1,11 @@
+# OpenTaverns product
+
+OpenTaverns is one browser-based multiplayer table for friends, with seven distinct games and no accounts. A host creates a table; friends join by code, invitation link or QR code and choose display names. One persistent Node.js server owns each live table, validates game actions, and saves room snapshots locally so the same host can restore tables after restart. Keep that data on persistent storage. This deployment is single-instance: rooms and action ordering are process-local, so multiple server instances sharing one data directory are not supported. Play requires a live connection; offline play is not provided.
+
+The collection includes Hearthlands, Saigon Grid, Blackout, Tidecall, Werewolf, Mosaic and Wildways. Each game has its own headless rules package and renderer, while the shared table provides invitations, sessions, reconnects, spectators, bots, timed pacing, rematches and host management. The server sends only each viewer's permitted state; hands, roles, choices and future random supply remain private where the rules require it.
+
+Wildways is a 2–5 player public-information tile game about shared habitats, route networks and influence. On a turn, choose one of three public tiles, rotate it, place it beside the growing map, optionally add a permanent Survey Marker, preview the score and confirm the whole turn. Matching route ports connect Trail or Stream networks; same-habitat tiles form regions. Control and scoring can change as networks grow. Players compete over two public Milestones.
+
+The Wildways renderer centers the map and draft, with legal-placement cues, network inspection and projected scores. Its nature-atlas surface has local light and dark themes and English, German and Vietnamese rules and controls. Patterns, silhouettes and player sigils accompany color. The shared platform keeps its warm-paper and forest-ink palette, Fraunces display type and DM Sans body type; each game retains its own visual world.
+
+OpenTaverns is for real-time play around one table, whether friends are together or joining remotely. The host computer must stay available for the match. Saved tables require the same persistent data directory after restart; an ephemeral host filesystem can lose them.
